@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <head>
+            <title>Create a New Trip</title>
+            <link rel="stylesheet" href="styles.css">
+        </head>
+
+
+        <div class="step-container" id="step1">
+            <h2>Step 1</h2>
+
+            <p>Where would you like to go?</p>
+            <input id="city" type="text" placeholder="City">
+            <input id="country" type="text" placeholder="Country">
+        
+
+            <p>Where are you coming from?</p>
+            <input id="city" type="text" placeholder="City">
+            <input id="state" type="text" placeholder="State">
+                
+
+            <p>What dates would you like to travel?</p>
+            <input id="fromDate" type="date"  >
+            <input id="toDate" type="date">
+
+    
+            <p>What's your budget?</p>
+            <input id="budget" type="text" placeholder="Enter Budget">
+
+            <div class="button">
+                <button id="button1">Next</button>
+            </div>
+        </div>
+
+         <div class="step-container" id="step2"> <!-- style="visibility: hidden" -->
+             <h2>Step 2</h2>
+             <p>What would you like to prioritize in your budget?</p>
+
+             <input id="food" type="range" min="0" max="100" oninput ="this.nextElementSiblingValue = this.value">
+             <label for="food">Food</label>
+
+             <input id="accomodations" type="range" min="0" max="100">
+             <label for="accomodations">Accomodations</label>
+        
+             <input id="flights" type="range" min="0" max="100">
+             <label for="flights">Flights</label>
+
+             <input id="activities" type="range" min="0" max="100">
+             <label for="activities">Activities</label>
+             
+
+              <div>
+                 <button id="button2">Done!</button>
+            </div>
+        </div>
+
+
+         <div class="loading" style="display:none">
+            <p>Creating Your Trip...</p>
+            <img src="loading.gif"></img>
+         </div>
+
+
+         <script src="create.js"></script>
+
+    </body>
+
+</html>
+
+
