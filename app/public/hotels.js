@@ -16,7 +16,7 @@ form.addEventListener("submit", async (event) => {
     document.getElementById("checkOut").value;
 
   const guests =
-    document.getElementById("adults").value;
+    document.getElementById("guests").value;
 
   results.innerHTML = "";
   error.textContent = "";
