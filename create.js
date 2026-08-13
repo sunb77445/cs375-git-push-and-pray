@@ -22,6 +22,8 @@ sliders.forEach(slider => {
 
 function onSubmit(){
 
+    loadingScreen.style.display = 'flex';
+
    // Trip Info 
    let destCity = document.getElementById("city").value;
    let destState = document.getElementById("state").value;
@@ -53,10 +55,23 @@ function onSubmit(){
    console.log(`Attractions Budget: ${attractionsBudget}`);
 
 
-   loadingScreen.style.display = 'flex';
+   async function search(){
+    let hotelResponse = await fetch(`/flights?passengers=${numTravelers}?from=${fromCity}?to=${destCity}?depart=${fromDate}?returnDate=${toDate}`);
+    let hotelBody = await response.json();
+    console.log(hotelBody);
+
+    let flightResponse = fetch(`/api/hotels?check_in_date=${fromDate}?check_out_date=${toDate}?adults=${numTravelers}`);
+    let flightBody = await response.json();
+    console.log(flightBody);
+
+
+    let foodResponse = fetch(`/restaurant?city=${destCity}?country=${destCountry}`);
+    let foodBody = await response.json();
+    console.log(foodBody);
+
+   }
+
 }
-
-
 
 // Event Listeners
 button2.addEventListener("click", onSubmit);
