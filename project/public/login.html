@@ -19,9 +19,6 @@
 
         <form id="loginForm">
 
-            <label>User ID:</label>
-            <input type="text" id="userId">
-
             <label>Username:</label>
             <input type="text" id="username" required>
 
@@ -49,9 +46,6 @@
 
                 event.preventDefault();
 
-                const userId =
-                    document.getElementById("userId").value;
-
                 const username =
                     document.getElementById("username").value;
 
@@ -68,7 +62,6 @@
                     },
 
                     body: JSON.stringify({
-                        userId,
                         username,
                         password
                     })
