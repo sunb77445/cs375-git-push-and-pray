@@ -1,109 +1,126 @@
-let zipInput = document.getElementById("zip");
-let button = document.getElementById("send");
+let locationInput = document.getElementById("location");
+let suggestions = document.getElementById("suggestions");
+let distanceInput = document.getElementById("distance");
+let sendButton = document.getElementById("send");
+let error = document.getElementById("error");
+let result = document.getElementById("result");
 
-button.addEventListener("click", () => {
-    let zip = zipInput.value.trim();
-    
-    let error = document.getElementById("error");
-    let resultDiv = document.getElementById("result");
+let selectedLat = null;
+let selectedLon = null;
 
-    
-    error.textContent = "";
 
-    while (resultDiv.firstChild) {
-        resultDiv.removeChild(resultDiv.firstChild);
-    }
+// AUTOCOMPLETE
+locationInput.addEventListener("input", () => {
 
-    if (!zip) {
-        error.textContent = "Please enter a ZIP code.";
+    let text = locationInput.value;
+
+    selectedLat = null;
+    selectedLon = null;
+
+    suggestions.replaceChildren();
+
+    if (text.length < 2) {
         return;
     }
 
-    //loadinging
-    button.disabled = true;
-    button.textContent = "Searching...";
-    
-    let loadingText = document.createElement("p");
-    loadingText.textContent = "Getting the best restaurants in the area... Please wait.";
-    
-    loadingText.classList.add("loading-message"); 
-    
-    resultDiv.appendChild(loadingText);
-
-    let requestUrl = `/restaurant?zip=${encodeURIComponent(zip)}`;
-
-    fetch(requestUrl)
-        .then((response) => response.json())
-        .then((data) => {
-            while (resultDiv.firstChild) {
-                resultDiv.removeChild(resultDiv.firstChild);
+    fetch(`/autocomplete?text=${encodeURIComponent(text)}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Autocomplete failed");
             }
-            
-            // enable the button
-            button.disabled = false;
-            button.textContent = "Find Restaurants";
+            return response.json();
+        })
+        .then(data => {
+            const places = Array.isArray(data.results)
+                ? data.results
+                : Array.isArray(data.features)
+                    ? data.features.map(feature => feature.properties || feature)
+                    : [];
 
-            // error message
-            if (data.error) {
-                error.textContent = data.error;
+            if (places.length === 0) {
                 return;
             }
 
-            if (data.length === 0) {
-                error.textContent = "No restaurants found in this location.";
-                return;
-            }
+            places.forEach(place => {
+                let option = document.createElement("div");
 
-            // get top 10 restaurants
-            data.forEach((restaurant, index) => {
-                let name = restaurant.name || "Unknown Restaurant Name";
-                let address = restaurant.formatted || "Address not available";
+                const formatted = place.formatted || place.name || "Unknown location";
+                const lat = place.lat ?? place.geometry?.coordinates?.[1];
+                const lon = place.lon ?? place.geometry?.coordinates?.[0];
 
-                let restaurantContainer = document.createElement("div");
-                restaurantContainer.classList.add("restaurant-card");
+                option.textContent = formatted;
 
-                // Create <h2> for the restaurant name
-                let heading = document.createElement("h2");
-                heading.textContent = `${index + 1}. ${name}`;
-                restaurantContainer.appendChild(heading);
+                option.addEventListener("click", () => {
+                    locationInput.value = formatted;
 
-                // Create <p> for the address
-                let addressPara = document.createElement("p");
-                let addressLabel = document.createElement("strong");
-                addressLabel.textContent = "Address: ";
-                
-                addressPara.appendChild(addressLabel);
-                addressPara.appendChild(document.createTextNode(address));
-                restaurantContainer.appendChild(addressPara);
+                    selectedLat = lat;
+                    selectedLon = lon;
 
-                // Create <p> for the website link if available
-                if (restaurant.website) {
-                    let websitePara = document.createElement("p");
-                    let websiteLink = document.createElement("a");
-                    
-                    websiteLink.href = restaurant.website;
-                    websiteLink.target = "_blank";
-                    websiteLink.textContent = "Visit Website";
-                    
-                    websitePara.appendChild(websiteLink);
-                    restaurantContainer.appendChild(websitePara);
-                }
+                    suggestions.replaceChildren();
 
-                let divider = document.createElement("hr");
-                restaurantContainer.appendChild(divider);
+                    console.log("Latitude:", selectedLat);
+                    console.log("Longitude:", selectedLon);
+                });
 
-                resultDiv.appendChild(restaurantContainer);
+                suggestions.appendChild(option);
             });
         })
-        .catch((err) => {
-            // Reset UI 
-            while (resultDiv.firstChild) {
-                resultDiv.removeChild(resultDiv.firstChild);
+        .catch(err => {
+            console.log(err);
+        });
+});
+
+
+// FIND RESTAURANTS
+sendButton.addEventListener("click", () => {
+
+    error.textContent = "";
+    result.replaceChildren();
+
+    if (selectedLat === null || selectedLon === null) {
+        error.textContent = "Please select a location from the suggestions.";
+        return;
+    }
+
+    let distance = distanceInput.value;
+
+    fetch(`/restaurant?lat=${selectedLat}&lon=${selectedLon}&distance=${distance}`)
+        .then(response => {
+
+            if (!response.ok) {
+                throw new Error("Could not get restaurants");
             }
-            button.disabled = false;
-            button.textContent = "Find Restaurants";
-            
-            error.textContent = "Could not fetch restaurant data.";
-            console.error(err);
+
+            return response.json();
+        })
+        .then(data => {
+
+            let restaurants = data.features;
+
+            if (restaurants.length === 0) {
+                result.textContent = "No restaurants found.";
+                return;
+            }
+
+            restaurants.forEach(place => {
+
+                let restaurant = document.createElement("div");
+
+                let name = document.createElement("h2");
+                name.textContent = place.properties.name || "Unknown Restaurant";
+
+                let address = document.createElement("p");
+                address.textContent =
+                    place.properties.address_line1 || "No address available";
+
+                restaurant.appendChild(name);
+                restaurant.appendChild(address);
+
+                result.appendChild(restaurant);
+            });
+        })
+        .catch(err => {
+            console.log(err);
+            error.textContent = "There was an error finding restaurants.";
         });
 });
