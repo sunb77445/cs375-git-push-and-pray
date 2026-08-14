@@ -2,41 +2,44 @@
 <html>
 
 <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="login.css">
+
     <title>Login</title>
 </head>
 
 <body>
 
-    <h1>Login</h1>
+    <div class="login-container">
 
-    <form id="loginForm">
+        <h1>Login</h1>
 
-        <label>User ID:</label>
-        <input type="text" id="userId">
+        <form id="loginForm">
 
-        <br><br>
+            <label>User ID:</label>
+            <input type="text" id="userId">
 
-        <label>Username:</label>
-        <input type="text" id="username" required>
+            <label>Username:</label>
+            <input type="text" id="username" required>
 
-        <br><br>
+            <label>Password:</label>
+            <input type="password" id="password" required>
 
-        <label>Password:</label>
-        <input type="password" id="password" required>
+            <button type="submit">Login</button>
 
-        <br><br>
+        </form>
 
-        <button type="submit">Login</button>
+        <p id="message"></p>
 
-    </form>
+        <p>
+            Don't have an account?
+            <a href="signup.html">Create one</a>
+        </p>
 
-    <p id="message"></p>
-
-    <p>
-        Don't have an account?
-        <a href="signup.html">Create one</a>
-    </p>
-
+    </div>
 
     <script>
 
