@@ -6,7 +6,7 @@ let apiKey = apiFile["api_key"];
 let port = 3000;
 let hostname = "localhost";
 app.use(express.static("public"));
-// don't change code above this line
+
 
 app.get("/autocomplete", (req, res) => {
   let text = req.query.text;

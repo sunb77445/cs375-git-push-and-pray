@@ -9,6 +9,23 @@ let selectedLat = null;
 let selectedLon = null;
 
 
+// DISTANCE CALCULATOR (Haversine Formula)
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371e3;
+    const rad = Math.PI / 180;
+    
+    const dLat = (lat2 - lat1) * rad;
+    const dLon = (lon2 - lon1) * rad;
+    
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat1 * rad) * Math.cos(lat2 * rad) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+              
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    
+    return R * c; 
+}
+
 // AUTOCOMPLETE
 locationInput.addEventListener("input", () => {
 
@@ -57,9 +74,6 @@ locationInput.addEventListener("input", () => {
                     selectedLon = lon;
 
                     suggestions.replaceChildren();
-
-                    console.log("Latitude:", selectedLat);
-                    console.log("Longitude:", selectedLon);
                 });
 
                 suggestions.appendChild(option);
@@ -69,7 +83,6 @@ locationInput.addEventListener("input", () => {
             console.log(err);
         });
 });
-
 
 // FIND RESTAURANTS
 sendButton.addEventListener("click", () => {
@@ -86,11 +99,9 @@ sendButton.addEventListener("click", () => {
 
     fetch(`/restaurant?lat=${selectedLat}&lon=${selectedLon}&distance=${distance}`)
         .then(response => {
-
             if (!response.ok) {
                 throw new Error("Could not get restaurants");
             }
-
             return response.json();
         })
         .then(data => {
@@ -106,15 +117,59 @@ sendButton.addEventListener("click", () => {
 
                 let restaurant = document.createElement("div");
 
+                //Name
                 let name = document.createElement("h2");
-                name.textContent = place.properties.name || "Unknown Restaurant";
+                let restaurantName = place.properties.name || "Unknown Restaurant";
+                name.textContent = restaurantName;
 
+                //Address 
                 let address = document.createElement("p");
-                address.textContent =
-                    place.properties.address_line1 || "No address available";
+                let fullAddress = place.properties.formatted || 
+                                  `${place.properties.address_line1 || ""} ${place.properties.address_line2 || ""}`.trim();
+                address.textContent = fullAddress ? `Address: ${fullAddress}` : "Address: No address available";
+
+                //Website
+                let websiteContainer = document.createElement("p");
+                if (place.properties.website) {
+                    let websiteLink = document.createElement("a");
+                    websiteLink.href = place.properties.website;
+                    websiteLink.textContent = "Visit Website";
+                    websiteLink.target = "_blank"
+                    websiteContainer.appendChild(websiteLink);
+                } 
+                else {
+                    websiteContainer.textContent = "Website: Not available";
+                }
+
+                //Distance Calculation
+                let distanceDisplay = document.createElement("p");
+                let restLat = place.properties.lat;
+                let restLon = place.properties.lon;
+
+                if (restLat && restLon && selectedLat && selectedLon) {
+                    let distInMeters = calculateDistance(selectedLat, selectedLon, restLat, restLon);
+                    let distInMiles = (distInMeters * 0.000621371).toFixed(2); 
+                    distanceDisplay.textContent = `Distance: ${Math.round(distInMeters)} meters (${distInMiles} miles)`;
+                } else {
+                    distanceDisplay.textContent = "Distance: Coordinates unavailable";
+                }
+
+                //Select Button
+                let selectBtn = document.createElement("button");
+                selectBtn.textContent = "Select";
+                selectBtn.style.marginTop = "10px";
+                
+                selectBtn.addEventListener("click", () => {
+                    selectBtn.textContent = "Added!";
+                    selectBtn.style.backgroundColor = "green";
+                    selectBtn.disabled = true; 
+                });
 
                 restaurant.appendChild(name);
                 restaurant.appendChild(address);
+                restaurant.appendChild(websiteContainer);
+                restaurant.appendChild(distanceDisplay);
+                restaurant.appendChild(selectBtn);
 
                 result.appendChild(restaurant);
             });
