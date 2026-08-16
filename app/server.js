@@ -12,7 +12,7 @@ app.use(express.static("public"));
 
 app.get("/api/hotels", async (req, res) => {
   try {
-    const { q, check_in_date, check_out_date, adults = 2 } = req.query;
+    const { q, check_in_date, check_out_date, adults, max_price } = req.query;
 
     if (!q) {
       return res.status(400).json({
@@ -34,17 +34,21 @@ app.get("/api/hotels", async (req, res) => {
 
 
     */
+
     const response = await axios.get("https://serpapi.com/search", {
       params: {
         engine: "google_hotels",
         q: q,
         check_in_date: check_in_date,
         check_out_date: check_out_date,
+        max_price: max_price,
         adults: adults,
         api_key: apiKey
       }
     });
+
     res.json(response.data);
+    
   } catch (error) {
     console.error("SerpApi error:", error.response?.data || error.message);
 
