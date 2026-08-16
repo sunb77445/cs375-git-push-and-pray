@@ -1,13 +1,32 @@
+require("dotenv").config();
+
 const express = require("express");
+const { searchFlights } = require("./lib/compareFlightPrices");
 
 const app = express();
 const PORT = 3000;
+const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
 
 app.use(express.json());
 app.use(express.static("public"));
 
 
-app.post("/flights", (req, res) => {
+function mockFlightsFor(from, to) {
+    return [
+        {
+            route: `${from} → ${to}`,
+            meta: "Nonstop · 6h 10m",
+            price: 214
+        },
+        {
+            route: `${from} → ${to}`,
+            meta: "1 stop · 8h 45m",
+            price: 178
+        }
+    ];
+}
+
+app.post("/flights", async (req, res) => {
 
     const {
         tripType,
@@ -27,27 +46,51 @@ app.post("/flights", (req, res) => {
         });
     }
 
-    // TODO: replace this block with a real call to a flight API
-    // (e.g. Kiwi.com) once one is picked. For now this returns
-    // placeholder flights so the frontend can be built and tested.
-    const mockFlights = [
-        {
-            route: `${from} → ${to}`,
-            meta: "Nonstop · 6h 10m",
-            price: 214
-        },
-        {
-            route: `${from} → ${to}`,
-            meta: "1 stop · 8h 45m",
-            price: 178
-        }
-    ];
+    // No API key configured yet (e.g. teammates without .env set up) ->
+    // fall back to mock data so the frontend still works for local dev/demo.
+    if (!RAPIDAPI_KEY) {
+        console.warn("RAPIDAPI_KEY not set -- returning mock flights. See .env.example.");
+        return res.json({
+            success: true,
+            message: "Flights found! (mock data -- no RAPIDAPI_KEY configured)",
+            flights: mockFlightsFor(from, to)
+        });
+    }
 
-    res.json({
-        success: true,
-        message: "Flights found!",
-        flights: mockFlights
-    });
+    try {
+        const flights = await searchFlights(RAPIDAPI_KEY, {
+            tripType,
+            passengers,
+            cabinClass,
+            from,
+            to,
+            depart,
+            returnDate
+        });
+
+        if (flights.length === 0) {
+            return res.json({
+                success: true,
+                message: "No live results came back -- try again or check different dates.",
+                flights: []
+            });
+        }
+
+        res.json({
+            success: true,
+            message: "Flights found!",
+            flights
+        });
+
+    } catch (err) {
+        console.error("Flight search failed:", err.message);
+        // Fail soft with mock data rather than breaking the demo.
+        res.json({
+            success: true,
+            message: "Live search failed, showing sample flights instead.",
+            flights: mockFlightsFor(from, to)
+        });
+    }
 });
 
 
