@@ -2,53 +2,52 @@
 <html>
 
 <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="signup.css">
+
     <title>Create Account</title>
 </head>
 
 <body>
 
-    <h1>Create Account</h1>
+    <div class="signup-container">
 
-    <form id="signupForm">
+        <h1>Create Account</h1>
 
-        <label>Username:</label>
-        <input type="text" id="username" required>
+        <form id="signupForm">
 
-        <br><br>
+            <label>Username:</label>
+            <input type="text" id="username" required>
 
-        <label>Password:</label>
-        <input type="password" id="password" required>
+            <label>Password:</label>
+            <input type="password" id="password" required>
 
-        <br><br>
+            <label>First Name:</label>
+            <input type="text" id="firstName">
 
-        <label>First Name:</label>
-        <input type="text" id="firstName">
+            <label>Last Name:</label>
+            <input type="text" id="lastName">
 
-        <br><br>
+            <label>Email:</label>
+            <input type="email" id="email">
 
-        <label>Last Name:</label>
-        <input type="text" id="lastName">
+            <button type="submit">
+                Create Account
+            </button>
 
-        <br><br>
+        </form>
 
-        <label>Email:</label>
-        <input type="email" id="email">
+        <p id="message"></p>
 
-        <br><br>
+        <p>
+            Already have an account?
+            <a href="login.html">Login</a>
+        </p>
 
-        <button type="submit">
-            Create Account
-        </button>
-
-    </form>
-
-    <p id="message"></p>
-
-    <p>
-        Already have an account?
-        <a href="login.html">Login</a>
-    </p>
-
+    </div>
 
     <script>
 

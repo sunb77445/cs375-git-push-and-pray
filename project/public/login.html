@@ -2,41 +2,41 @@
 <html>
 
 <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="login.css">
+
     <title>Login</title>
 </head>
 
 <body>
 
-    <h1>Login</h1>
+    <div class="login-container">
 
-    <form id="loginForm">
+        <h1>Login</h1>
 
-        <label>User ID:</label>
-        <input type="text" id="userId">
+        <form id="loginForm">
 
-        <br><br>
+            <label>Username:</label>
+            <input type="text" id="username" required>
 
-        <label>Username:</label>
-        <input type="text" id="username" required>
+            <label>Password:</label>
+            <input type="password" id="password" required>
 
-        <br><br>
+            <button type="submit">Login</button>
 
-        <label>Password:</label>
-        <input type="password" id="password" required>
+        </form>
 
-        <br><br>
+        <p id="message"></p>
 
-        <button type="submit">Login</button>
+        <p>
+            Don't have an account?
+            <a href="signup.html">Create one</a>
+        </p>
 
-    </form>
-
-    <p id="message"></p>
-
-    <p>
-        Don't have an account?
-        <a href="signup.html">Create one</a>
-    </p>
-
+    </div>
 
     <script>
 
@@ -45,9 +45,6 @@
             .addEventListener("submit", async function(event) {
 
                 event.preventDefault();
-
-                const userId =
-                    document.getElementById("userId").value;
 
                 const username =
                     document.getElementById("username").value;
@@ -65,7 +62,6 @@
                     },
 
                     body: JSON.stringify({
-                        userId,
                         username,
                         password
                     })

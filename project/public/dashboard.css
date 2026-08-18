@@ -1,0 +1,124 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Comfortaa', sans-serif;
+    background-color: #F6F1E9;
+    color: #2C3A47;
+}
+
+header {
+    height: 80px;
+    padding: 0 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    background-color: #2C3A47;
+    color: #F6F1E9;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.header-buttons button {
+    width: 42px;
+    height: 42px;
+
+    border: none;
+    border-radius: 50%;
+
+    background-color: white;
+    color: #F6F1E9;
+
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.header-buttons button:hover {
+    background-color: #B84A62;
+}
+
+main {
+    padding: 40px;
+}
+
+.dashboard-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 30px;
+}
+
+.dashboard-top h2 {
+    margin: 0;
+    font-size: 24px;
+}
+
+#createPlanButton {
+    padding: 12px 22px;
+
+    border: none;
+    border-radius: 8px;
+
+    background-color: #B84A62;
+    color: #F6F1E9;
+
+    font-family: 'Comfortaa', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+#createPlanButton:hover {
+    background-color: #2C3A47;
+}
+
+#travelPlans {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+.plan-placeholder {
+    min-height: 200px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    padding: 25px;
+
+    background-color: white;
+    border-radius: 12px;
+
+    text-align: center;
+}
+
+.plan-placeholder h3 {
+    margin: 0 0 10px 0;
+
+    font-size: 18px;
+    color: #2C3A47;
+}
+
+.plan-placeholder p {
+    margin: 0;
+
+    font-size: 14px;
+    color: #4A6572;
+}

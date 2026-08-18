@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Travel Planner</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+
+<body>
+
+    <header>
+
+        <h1>Travel Planner</h1>
+
+        <div class="header-buttons">
+            <button id="notificationButton">🔔</button>
+            <button id="userButton">👤</button>
+        </div>
+
+    </header>
+
+
+    <main>
+
+        <div class="dashboard-top">
+
+            <h2>My Travel Plans</h2>
+
+            <button id="createPlanButton">
+                + Create Plan
+            </button>
+
+        </div>
+
+
+        <section id="travelPlans">
+
+            <div class="plan-placeholder">
+                <h3>No Travel Plans Yet</h3>
+                <p>Create a plan to get started.</p>
+            </div>
+
+        </section>
+
+    </main>
+
+    <script>
+        document.getElementById("userButton").addEventListener("click", function() {
+            window.location.href = "login.html";
+        });
+    </script>
+
+</body>
+
+</html>
