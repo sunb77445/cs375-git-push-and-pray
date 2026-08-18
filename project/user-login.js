@@ -9,27 +9,6 @@ const PORT = 3000;
 app.use(express.json());
 app.use(express.static("public"));
 
-
-app.get("/test-db", (req, res) => {
-    sql`SELECT NOW()`
-        .then(result => {
-            res.json({
-                success: true,
-                message: "Database connected!",
-                time: result[0]
-            });
-        })
-        .catch(error => {
-            console.error(error);
-
-            res.status(500).json({
-                success: false,
-                message: "Database connection failed"
-            });
-        });
-});
-
-
 app.post("/signup", (req, res) => {
     const {
         username,
