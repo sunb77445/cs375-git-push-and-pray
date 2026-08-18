@@ -1,99 +1,209 @@
 require("dotenv").config();
 
 const express = require("express");
-const { searchFlights } = require("./lib/compareFlightPrices");
+
+const {
+    searchFlights
+} = require("./lib/compareFlightPrices");
+
 
 const app = express();
+
 const PORT = 3000;
-const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
 
-app.use(express.json());
-app.use(express.static("public"));
+const SERPAPI_KEY =
+    process.env.SERPAPI_KEY;
 
 
-function mockFlightsFor(from, to) {
-    return [
-        {
-            route: `${from} → ${to}`,
-            meta: "Nonstop · 6h 10m",
-            price: 214
-        },
-        {
-            route: `${from} → ${to}`,
-            meta: "1 stop · 8h 45m",
-            price: 178
-        }
-    ];
-}
+app.use(
+    express.json()
+);
 
-app.post("/flights", async (req, res) => {
 
-    const {
-        tripType,
-        passengers,
-        cabinClass,
-        from,
-        to,
-        depart,
-        returnDate
-    } = req.body;
+app.use(
+    express.static("public")
+);
 
-    if (!from || !to || !depart) {
 
-        return res.status(400).json({
-            success: false,
-            message: "Missing required search fields"
-        });
-    }
+app.post(
+    "/flights",
+    async (req, res) => {
 
-    // No API key configured yet (e.g. teammates without .env set up) ->
-    // fall back to mock data so the frontend still works for local dev/demo.
-    if (!RAPIDAPI_KEY) {
-        console.warn("RAPIDAPI_KEY not set -- returning mock flights. See .env.example.");
-        return res.json({
-            success: true,
-            message: "Flights found! (mock data -- no RAPIDAPI_KEY configured)",
-            flights: mockFlightsFor(from, to)
-        });
-    }
+        console.log("\n");
+        console.log("========================================");
+        console.log("NEW FLIGHT SEARCH");
+        console.log("========================================");
 
-    try {
-        const flights = await searchFlights(RAPIDAPI_KEY, {
+        console.log(
+            JSON.stringify(
+                req.body,
+                null,
+                2
+            )
+        );
+
+
+        const {
+
             tripType,
-            passengers,
-            cabinClass,
-            from,
-            to,
-            depart,
-            returnDate
-        });
 
-        if (flights.length === 0) {
-            return res.json({
-                success: true,
-                message: "No live results came back -- try again or check different dates.",
+            passengers,
+
+            cabinClass,
+
+            from,
+
+            to,
+
+            depart,
+
+            returnDate
+
+        } = req.body;
+
+
+        if (
+            !from ||
+            !to ||
+            !depart
+        ) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message:
+                    "Departure, arrival, and departure date are required.",
+
                 flights: []
+
             });
         }
 
-        res.json({
-            success: true,
-            message: "Flights found!",
-            flights
-        });
 
-    } catch (err) {
-        console.error("Flight search failed:", err.message);
-        // Fail soft with mock data rather than breaking the demo.
-        res.json({
-            success: true,
-            message: "Live search failed, showing sample flights instead.",
-            flights: mockFlightsFor(from, to)
-        });
+        if (!SERPAPI_KEY) {
+
+            console.error(
+                "SERPAPI_KEY IS MISSING."
+            );
+
+            return res.status(500).json({
+
+                success: false,
+
+                message:
+                    "SerpApi key is missing. Check your .env file.",
+
+                flights: []
+
+            });
+        }
+
+
+        try {
+
+            const flights =
+                await searchFlights(
+                    SERPAPI_KEY,
+                    {
+                        tripType:
+                            tripType || "oneway",
+
+                        passengers:
+                            passengers || 1,
+
+                        cabinClass:
+                            cabinClass || "economy",
+
+                        from,
+
+                        to,
+
+                        depart,
+
+                        returnDate
+                    }
+                );
+
+
+            console.log(
+                `Returning ${flights.length} flights to frontend.`
+            );
+
+
+            return res.json({
+
+                success: true,
+
+                message:
+                    `Found ${flights.length} flights.`,
+
+                flights
+
+            });
+
+
+        } catch (error) {
+
+            console.error(
+                "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+            );
+
+            console.error(
+                "FLIGHT SEARCH FAILED"
+            );
+
+            console.error(
+                error
+            );
+
+            console.error(
+                "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
+            );
+
+
+            return res.status(502).json({
+
+                success: false,
+
+                message:
+                    error.message,
+
+                flights: []
+
+            });
+        }
     }
-});
+);
 
 
-app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
-});
+//Start server:
+
+app.listen(
+    PORT,
+    () => {
+
+        console.log("\n");
+        console.log("========================================");
+
+        console.log(
+            `Server running at http://localhost:${PORT}`
+        );
+
+        console.log("========================================");
+
+        console.log(
+            "SerpApi key:",
+            SERPAPI_KEY
+                ? "LOADED"
+                : "MISSING"
+        );
+
+        console.log(
+            "Flight API: SerpApi Google Flights"
+        );
+
+        console.log("========================================");
+
+    }
+);

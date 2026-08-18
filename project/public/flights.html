@@ -127,6 +127,9 @@
 
                 if (data.success) {
                     renderResults(data.flights);
+                } else {
+                    document.getElementById("results").textContent =
+                        data.message || "Flight search failed.";
                 }
 
             });
