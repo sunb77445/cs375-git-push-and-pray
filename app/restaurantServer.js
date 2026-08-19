@@ -2,7 +2,7 @@ let axios = require("axios");
 let express = require("express");
 let app = express();
 let apiFile = require("../env.json");
-let apiKey = apiFile["api_key"];
+let apiKey = apiFile["restaurant_api_key"];
 let port = 3000;
 let hostname = "localhost";
 app.use(express.static("public"));
@@ -56,5 +56,5 @@ app.get("/restaurant", (req, res) => {
 });
 
 app.listen(port, hostname, () => {
-  console.log(`http://${hostname}:${port}`);
+  console.log(`http://${hostname}:${port}/restaurant.html`);
 });
