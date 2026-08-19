@@ -57,6 +57,7 @@ form.addEventListener("submit", async (event) => {
 
   results.innerHTML = "";
   error.textContent = "";
+  suggestionsContainer.innerHTML = "";
 
   try {
 
@@ -215,3 +216,9 @@ function displaySuggestions(suggestions) {
     });
 
 }
+
+document.addEventListener("click", (event) => {
+    if (!locationInput.contains(event.target) && !suggestionsContainer.contains(event.target)) {
+        suggestionsContainer.innerHTML = "";
+    }
+});

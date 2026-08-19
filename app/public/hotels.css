@@ -37,6 +37,10 @@ h1 {
 
 }
 
+.location-container {
+    position: relative;
+}
+
 #checkIn,
 #checkOut {
     padding: 10px;
