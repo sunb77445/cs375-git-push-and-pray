@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Search Flights</title>
+</head>
+
+<body>
+
+    <h1>Search Flights</h1>
+
+    <form id="flightSearchForm">
+
+        <label>Trip Type:</label>
+        <select id="tripType">
+            <option value="roundtrip">Round trip</option>
+            <option value="oneway">One way</option>
+        </select>
+
+        <br><br>
+
+        <label>Passengers:</label>
+        <select id="passengers">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4+</option>
+        </select>
+
+        <br><br>
+
+        <label>Class:</label>
+        <select id="cabinClass">
+            <option value="economy">Economy</option>
+            <option value="premium">Premium Economy</option>
+            <option value="business">Business</option>
+            <option value="first">First</option>
+        </select>
+
+        <br><br>
+
+        <label>From:</label>
+        <input type="text" id="from" required>
+
+        <br><br>
+
+        <label>To:</label>
+        <input type="text" id="to" required>
+
+        <br><br>
+
+        <label>Departure Date:</label>
+        <input type="date" id="depart" required>
+
+        <br><br>
+
+        <label>Return Date:</label>
+        <input type="date" id="return">
+
+        <br><br>
+
+        <button type="submit">Search</button>
+
+    </form>
+
+    <p id="message"></p>
+
+    <div id="results"></div>
+
+
+    <script>
+
+        document
+            .getElementById("flightSearchForm")
+            .addEventListener("submit", async function(event) {
+
+                event.preventDefault();
+
+                const tripType =
+                    document.getElementById("tripType").value;
+
+                const passengers =
+                    document.getElementById("passengers").value;
+
+                const cabinClass =
+                    document.getElementById("cabinClass").value;
+
+                const from =
+                    document.getElementById("from").value;
+
+                const to =
+                    document.getElementById("to").value;
+
+                const depart =
+                    document.getElementById("depart").value;
+
+                const returnDate =
+                    document.getElementById("return").value;
+
+
+                const response = await fetch("/flights", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        tripType,
+                        passengers,
+                        cabinClass,
+                        from,
+                        to,
+                        depart,
+                        returnDate
+                    })
+                });
+
+
+                const data = await response.json();
+
+
+                document.getElementById("message")
+                    .textContent = data.message;
+
+
+                if (data.success) {
+                    renderResults(data.flights);
+                } else {
+                    document.getElementById("results").textContent =
+                        data.message || "Flight search failed.";
+                }
+
+            });
+
+
+        function renderResults(flights) {
+
+            const resultsDiv =
+                document.getElementById("results");
+
+            resultsDiv.innerHTML = "";
+
+            if (!flights || flights.length === 0) {
+                resultsDiv.textContent = "No flights found.";
+                return;
+            }
+
+            flights.forEach(function(flight) {
+
+                const card = document.createElement("div");
+
+                card.innerHTML = `
+                    <p>
+                        <strong>${flight.route}</strong><br>
+                        ${flight.meta}<br>
+                        $${flight.price}
+                        <button class="add-btn">Add to itinerary</button>
+                    </p>
+                    <hr>
+                `;
+
+                resultsDiv.appendChild(card);
+            });
+        }
+
+    </script>
+
+</body>
+
+</html>
