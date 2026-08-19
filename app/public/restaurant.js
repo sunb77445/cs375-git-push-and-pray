@@ -13,17 +13,17 @@ let selectedLon = null;
 function calculateDistance(lat1, lon1, lat2, lon2) {
     const R = 6371e3;
     const rad = Math.PI / 180;
-    
+
     const dLat = (lat2 - lat1) * rad;
     const dLon = (lon2 - lon1) * rad;
-    
+
     const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-              Math.cos(lat1 * rad) * Math.cos(lat2 * rad) *
-              Math.sin(dLon / 2) * Math.sin(dLon / 2);
-              
+        Math.cos(lat1 * rad) * Math.cos(lat2 * rad) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    
-    return R * c; 
+
+    return R * c;
 }
 
 // AUTOCOMPLETE
@@ -40,7 +40,7 @@ locationInput.addEventListener("input", () => {
         return;
     }
 
-    fetch(`/autocomplete?text=${encodeURIComponent(text)}`)
+    fetch(`/autocomplete?text=${text}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error("Autocomplete failed");
@@ -48,11 +48,8 @@ locationInput.addEventListener("input", () => {
             return response.json();
         })
         .then(data => {
-            const places = Array.isArray(data.results)
-                ? data.results
-                : Array.isArray(data.features)
-                    ? data.features.map(feature => feature.properties || feature)
-                    : [];
+            //fetching places
+            const places = data.features || [];
 
             if (places.length === 0) {
                 return;
@@ -61,18 +58,16 @@ locationInput.addEventListener("input", () => {
             places.forEach(place => {
                 let option = document.createElement("div");
 
-                const formatted = place.formatted || place.name || "Unknown location";
-                const lat = place.lat ?? place.geometry?.coordinates?.[1];
-                const lon = place.lon ?? place.geometry?.coordinates?.[0];
+                const formatted = place.properties.formatted || "Unknown location";
+                const lat = place.geometry.coordinates[1];
+                const lon = place.geometry.coordinates[0]; 
 
                 option.textContent = formatted;
 
                 option.addEventListener("click", () => {
                     locationInput.value = formatted;
-
                     selectedLat = lat;
                     selectedLon = lon;
-
                     suggestions.replaceChildren();
                 });
 
@@ -124,8 +119,8 @@ sendButton.addEventListener("click", () => {
 
                 //Address 
                 let address = document.createElement("p");
-                let fullAddress = place.properties.formatted || 
-                                  `${place.properties.address_line1 || ""} ${place.properties.address_line2 || ""}`.trim();
+                let fullAddress = place.properties.formatted ||
+                    `${place.properties.address_line1 || ""} ${place.properties.address_line2 || ""}`.trim();
                 address.textContent = fullAddress ? `Address: ${fullAddress}` : "Address: No address available";
 
                 //Website
@@ -135,7 +130,7 @@ sendButton.addEventListener("click", () => {
                     websiteLink.href = place.properties.website;
                     websiteLink.textContent = "Visit Website";
                     websiteContainer.appendChild(websiteLink);
-                } 
+                }
                 else {
                     websiteContainer.textContent = "Website: Not available";
                 }
@@ -147,9 +142,9 @@ sendButton.addEventListener("click", () => {
 
                 if (restLat && restLon && selectedLat && selectedLon) {
                     let distInMeters = calculateDistance(selectedLat, selectedLon, restLat, restLon);
-                    let distInMiles = (distInMeters * 0.000621371).toFixed(2); 
-                    distanceDisplay.textContent = `Distance: ${Math.round(distInMeters)} meters (${distInMiles} miles)`;
-                } 
+                    let distInMiles = (distInMeters * 0.000621371).toFixed(2);
+                    distanceDisplay.textContent = `Distance: ${distInMiles} miles`;
+                }
                 else {
                     distanceDisplay.textContent = "Distance: Coordinates unavailable";
                 }
@@ -157,12 +152,12 @@ sendButton.addEventListener("click", () => {
                 //Select Button
                 let selectBtn = document.createElement("button");
                 selectBtn.textContent = "Select";
-           
-                
+
+
                 selectBtn.addEventListener("click", () => {
                     selectBtn.textContent = "Added!";
                     selectBtn.style.backgroundColor = "green";
-                    selectBtn.disabled = true; 
+                    selectBtn.disabled = true;
                 });
 
                 restaurant.appendChild(name);
