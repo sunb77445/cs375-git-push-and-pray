@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Restaurant Finder</title>
+    <link rel="stylesheet" href="restaurant.css" />
+</head>
+
+<body>
+
+    <h1>Restaurant Finder</h1>
+
+    <div>
+        <label for="location">Location:</label>
+        <input
+            id="location"
+            type="text"
+            placeholder="e.g. Philadelphia"
+            autocomplete="off"
+        />
+
+        <div id="suggestions"></div>
+    </div>
+
+    <br>
+
+    <div>
+        <label for="distance">Distance:</label>
+
+        <select id="distance">
+            <option value="1000">1 km</option>
+            <option value="5000">5 km</option>
+            <option value="10000">10 km</option>
+        </select>
+    </div>
+
+    <br>
+
+    <button id="send">Find Restaurants</button>
+
+    <p id="error" style="color: red;"></p>
+
+    <div id="result"></div>
+
+    <script src="restaurant.js"></script>
+
+</body>
+
+</html>
