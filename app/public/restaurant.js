@@ -105,7 +105,7 @@ sendButton.addEventListener("click", () => {
             return response.json();
         })
         .then(data => {
-
+            console.log(data);
             let restaurants = data.features;
 
             if (restaurants.length === 0) {
@@ -134,7 +134,6 @@ sendButton.addEventListener("click", () => {
                     let websiteLink = document.createElement("a");
                     websiteLink.href = place.properties.website;
                     websiteLink.textContent = "Visit Website";
-                    websiteLink.target = "_blank"
                     websiteContainer.appendChild(websiteLink);
                 } 
                 else {
@@ -150,14 +149,15 @@ sendButton.addEventListener("click", () => {
                     let distInMeters = calculateDistance(selectedLat, selectedLon, restLat, restLon);
                     let distInMiles = (distInMeters * 0.000621371).toFixed(2); 
                     distanceDisplay.textContent = `Distance: ${Math.round(distInMeters)} meters (${distInMiles} miles)`;
-                } else {
+                } 
+                else {
                     distanceDisplay.textContent = "Distance: Coordinates unavailable";
                 }
 
                 //Select Button
                 let selectBtn = document.createElement("button");
                 selectBtn.textContent = "Select";
-                selectBtn.style.marginTop = "10px";
+           
                 
                 selectBtn.addEventListener("click", () => {
                     selectBtn.textContent = "Added!";
