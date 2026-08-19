@@ -20,101 +20,10 @@ sliders.forEach(slider => {
 });
 
 
-// formatting
-function formatHotels(hotelList){
-      hotelList.forEach((hotel) => {
 
-      const hotelElement = document.createElement("div");
-      hotelElement.className = "hotel";
-
-      // Hotel image
-      const image = hotel.images &&hotel.images.length > 0
-          ? `
-            <img
-              src="${hotel.images[0].thumbnail}"
-              alt="${hotel.name || "Hotel"}"
-            >
-          `
-          : "";
-
-      // Rating
-      const rating =
-        hotel.rating
-          ? `<p>${hotel.rating} / 5</p>`
-          : "";
-
-      // Reviews
-      const reviews =
-        hotel.reviews
-          ? `<p>${hotel.reviews} reviews</p>`
-          : "";
-
-      // Price per night
-      const price =
-        hotel.rate_per_night?.lowest
-          ? `
-            <p class="price">
-              ${hotel.rate_per_night.lowest}
-              per night
-            </p>
-          `
-          : "";
-
-      // Total price
-      const total =
-        hotel.total_rate?.lowest
-          ? `
-            <p>
-              Total:
-              ${hotel.total_rate.lowest}
-            </p>
-          `
-          : "";
-
-      // Description
-      const description =
-        hotel.description
-          ? `<p>${hotel.description}</p>`
-          : "";
-
-      hotelElement.innerHTML = `
-        ${image}
-
-        <div class="hotel-info">
-
-          <h2>
-            ${hotel.name || "Unnamed Hotel"}
-          </h2>
-
-          <p>
-            ${hotel.type || "Hotel"}
-          </p>
-
-          ${rating}
-
-          ${reviews}
-
-          ${price}
-
-          ${total}
-
-          ${description}
-
-        </div>
-
-        <div class="clear"></div>
-      `;
-
-      results.appendChild(hotelElement);
-    });
-}
-
-
-
-
-async function search(){
-
-// Trip Info 
+async function onSubmit(){
+   
+   // Trip Info 
    let destCity = document.getElementById("city").value;
    let destState = document.getElementById("state").value;
    let destCountry = document.getElementById("country").value;
@@ -134,8 +43,7 @@ async function search(){
    let flightBudget = totalBudget * (document.getElementById("flights").value / 100);
    let attractionsBudget = totalBudget * (document.getElementById("activities").value / 100);
 
-
-   console.log(`Going To: ${destCity}, ${destState}, ${destCountry}`);
+  console.log(`Going To: ${destCity}, ${destState}, ${destCountry}`);
    console.log(`From: ${fromCity}, ${fromState}`);
    console.log(`On: ${fromDate} to ${toDate}`);
    console.log(`With ${numTravelers} Travelers`);
@@ -144,35 +52,24 @@ async function search(){
    console.log(`Flight Budget: ${flightBudget}`);
    console.log(`Attractions Budget: ${attractionsBudget}`);
 
+   const params = new URLSearchParams({
+      destCity: destCity,
+      destState: destState,
+      destCountry: destCountry,
+      fromCity: fromCity,
+      fromState: fromState,
+      fromDate: fromDate,
+      toDate: toDate,
+      numTravelers: numTravelers,
+      totalBudget: totalBudget,
+      foodBudget: foodBudget,
+      hotelBudget: hotelBudget,
+      flightBudget: flightBudget,
+      attractionsBudget: attractionsBudget,
 
-   // Hotel API
-    let hotelResponse = await fetch(`/api/hotels?q=hotels in ${destCity} ${destCountry}&check_in_date=${fromDate}&check_out_date=${toDate}&adults=${numTravelers}&max_price=${hotelBudget}`);
-    let hotelBody = await hotelResponse.json();
-    console.log(hotelBody);
-    let hotels = hotelBody.properties;
+   });
 
-
-
-
-   // Flight API
-   /* let flightResponse = await fetch(`/flights?passengers=${numTravelers}?from=${fromCity}?to=${destCity}?depart=${fromDate}?returnDate=${toDate}`);
-    let flightBody = await response.json();
-    console.log(flightBody);
-
-
-    // Food API
-    let foodResponse = fetch(`/restaurant?city=${destCity}?country=${destCountry}`);
-    let foodBody = await response.json();
-    console.log(foodBody);*/
-
-}
-
-
-
-async function onSubmit(){
-   loadingScreen.style.display = 'flex';
-   await search();
-   window.location.href = 'results.html';
+   window.location.href = `results.html?${params}`;
 
 }
 

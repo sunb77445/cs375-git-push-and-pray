@@ -5,7 +5,7 @@ const error = document.getElementById("error");
 
 
 
-function formatHotels(hotelList){
+function formatHotels(hotelList, element){
       hotelList.forEach((hotel) => {
 
       const hotelElement = document.createElement("div");
@@ -89,7 +89,7 @@ function formatHotels(hotelList){
         <div class="clear"></div>
       `;
 
-      results.appendChild(hotelElement);
+      element.appendChild(hotelElement);
     });
 }
 
@@ -143,95 +143,6 @@ form.addEventListener("submit", async (event) => {
     }
 
     formatHotels(data.properties);
-
-    /*
-        data.properties.forEach((hotel) => {
-
-      const hotelElement = document.createElement("div");
-      hotelElement.className = "hotel";
-
-      // Hotel image
-      const image = hotel.images &&hotel.images.length > 0
-          ? `
-            <img
-              src="${hotel.images[0].thumbnail}"
-              alt="${hotel.name || "Hotel"}"
-            >
-          `
-          : "";
-
-      // Rating
-      const rating =
-        hotel.rating
-          ? `<p>${hotel.rating} / 5</p>`
-          : "";
-
-      // Reviews
-      const reviews =
-        hotel.reviews
-          ? `<p>${hotel.reviews} reviews</p>`
-          : "";
-
-      // Price per night
-      const price =
-        hotel.rate_per_night?.lowest
-          ? `
-            <p class="price">
-              ${hotel.rate_per_night.lowest}
-              per night
-            </p>
-          `
-          : "";
-
-      // Total price
-      const total =
-        hotel.total_rate?.lowest
-          ? `
-            <p>
-              Total:
-              ${hotel.total_rate.lowest}
-            </p>
-          `
-          : "";
-
-      // Description
-      const description =
-        hotel.description
-          ? `<p>${hotel.description}</p>`
-          : "";
-
-      hotelElement.innerHTML = `
-        ${image}
-
-        <div class="hotel-info">
-
-          <h2>
-            ${hotel.name || "Unnamed Hotel"}
-          </h2>
-
-          <p>
-            ${hotel.type || "Hotel"}
-          </p>
-
-          ${rating}
-
-          ${reviews}
-
-          ${price}
-
-          ${total}
-
-          ${description}
-
-        </div>
-
-        <div class="clear"></div>
-      `;
-
-      results.appendChild(hotelElement);
-    });
-
-    */
 
   } catch (error) {
 

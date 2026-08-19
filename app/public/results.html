@@ -8,26 +8,51 @@
 
 
         <nav class="travel-nav">
-
             <ul>
-                <li>Hotels</li>
-                <li>Flights</li>
-                <li>Food</li>
+                <li id="hotels" class="tab-button active">Hotels</li>
+                <li id="flights" class="tab-button">Flights</li>
+                <li id="food" class="tab-button">Restaurants</li>
+                <li id="selected" class="tab-button">Selections</li>
             </ul>
         
         </nav>
 
-        <script>
-            function loadHotels(url){
-                fetch(url).then(response => {
-                    
-                })
-            }
-        </script>
+        <!--   <div class="loading" >
+            <img src="loading.gif">
+            <p>Creating Your Trip...</p>
+        </div> -->
+
+        <h4 id="message"> Here are your results! </h4>
+
+        <div id="results-page">
+
+            <div id="hotels-results" class="results-page active"></div>
+
+            <div id="flights-results" class="results-page"></div>
+
+            <div id="food-results" class="results-page"></div>
+
+            <div id="selected-results" class="results-page">
+                <ul>
+                    <h1>Hotel</h1>
+                    <h1>Flight</h1>
+                    <h1>Restaurants</h1>
+                </ul>
+                <p>Total Cost: </p>
+                <p>You've used _% of your budget!</p>
+                <button>Save Trip</button>
+
+            </div>
+
+        </div>
 
 
          <script src="hotels.js"></script>
          <script src="create.js"></script>
+         <script src="results.js"></script>
+
+  
+
 
     </body>
 </html>
