@@ -67,3 +67,27 @@ input {
     border-radius: 15px;
     
 }
+
+#suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.suggestion {
+    padding: 12px;
+    font-size: 14px;
+    border-bottom: 1px solid #eee;
+}
+
+
+.suggestion:hover {
+    background: #f5f5f5;
+}

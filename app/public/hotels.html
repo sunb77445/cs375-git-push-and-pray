@@ -14,7 +14,13 @@
 
     <form id="searchForm" class="search-box">
 
-        <input type="text" id="location" placeholder="Where do you want to stay?" required>
+        <div class="location-container">
+        
+            <input type="text" id="location" placeholder="Where do you want to stay?" autocomplete="off" required>
+        
+            <div id="suggestions"></div>
+        
+        </div>
 
         <label>
             Check-in:

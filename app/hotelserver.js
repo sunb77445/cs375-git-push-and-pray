@@ -19,21 +19,6 @@ app.get("/api/hotels", async (req, res) => {
         error: "Missing hotel search query."
       });
     }
-
-    //TODO: Also add autocomplete feature for hotels using serpapi's google_hotels_autocomplete engine.
-    /*
-    const { getJson } = require("serpapi");
-
-      getJson({
-        engine: "google_hotels_autocomplete",
-        q: q,
-    
-      }, (json) => {
-        console.log(json["suggestions"]);
-      });
-
-
-    */
     const response = await axios.get("https://serpapi.com/search", {
       params: {
         engine: "google_hotels",
@@ -53,6 +38,37 @@ app.get("/api/hotels", async (req, res) => {
       details: error.response?.data || error.message
     });
   }
+});
+
+app.get("/api/hotel-autocomplete", async (req, res) => {
+    try {
+        const {q} = req.query;
+
+        if (!q || q.trim().length < 2) {
+            return res.json({
+                suggestions: []
+            });
+        }
+
+        const response = await axios.get("https://serpapi.com/search", {
+                params: {
+                    engine: "google_hotels_autocomplete",
+                    q: q,
+                    api_key: apiKey
+                }
+            }
+        );
+
+        res.json(response.data);
+
+    } catch (error) {
+
+        console.error("Autocomplete error:", error.message);
+
+        res.status(500).json({
+            error: "Unable to get suggestions."
+        });
+    }
 });
 
 app.listen(port, hostname, () => {

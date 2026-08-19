@@ -3,6 +3,43 @@ const results = document.getElementById("results");
 const loading = document.getElementById("loading");
 const error = document.getElementById("error");
 
+//Autocomplete
+const locationInput = document.getElementById("location");
+const suggestionsContainer =document.getElementById("suggestions");
+
+let autocompleteTimeout;
+
+locationInput.addEventListener("input", () => {
+
+    clearTimeout(autocompleteTimeout);
+
+    const query = locationInput.value.trim();
+
+    autocompleteTimeout = setTimeout(async () => {
+
+        try {
+
+            const response = await fetch(`/api/hotel-autocomplete?q=${encodeURIComponent(query)}`);
+
+            if (!response.ok) {
+                throw new Error("Autocomplete search failed.");
+            }
+
+            const data = await response.json();
+            displaySuggestions(data.suggestions || []);
+
+        } catch (error) {
+            console.error(
+                "Autocomplete error:",
+                error
+            );
+
+        }
+
+    }, 300);
+
+});
+
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
@@ -141,3 +178,40 @@ form.addEventListener("submit", async (event) => {
     error.textContent = error.message;
   }
 });
+
+function displaySuggestions(suggestions) {
+
+    suggestionsContainer.innerHTML = "";
+
+    if (!suggestions || suggestions.length === 0) {
+        return;
+    }
+
+    suggestions.forEach(function (suggestion) {
+
+        const suggestionText = suggestion.autocomplete_suggestion;
+
+        if (!suggestionText) {
+            return;
+        }
+
+        const suggestionElement = document.createElement("div");
+
+        suggestionElement.className = "suggestion";
+        suggestionElement.textContent = suggestionText;
+
+        suggestionElement.addEventListener("click", function () {
+
+                locationInput.value = suggestionText;
+                suggestionsContainer.innerHTML = "";
+
+            }
+        );
+
+        suggestionsContainer.appendChild(
+            suggestionElement
+        );
+
+    });
+
+}
