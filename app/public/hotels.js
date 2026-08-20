@@ -43,17 +43,13 @@ locationInput.addEventListener("input", () => {
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  const location =
-    document.getElementById("location").value;
+  const location = document.getElementById("location").value;
 
-  const checkIn =
-    document.getElementById("checkIn").value;
+  const checkIn = document.getElementById("checkIn").value;
 
-  const checkOut =
-    document.getElementById("checkOut").value;
+  const checkOut = document.getElementById("checkOut").value;
 
-  const guests =
-    document.getElementById("guests").value;
+  const guests = document.getElementById("guests").value;
 
   results.innerHTML = "";
   error.textContent = "";
@@ -68,8 +64,7 @@ form.addEventListener("submit", async (event) => {
       adults: guests
     });
 
-    const response = await fetch(
-      `/api/hotels?${params}`
+    const response = await fetch(`/api/hotels?${params}`
     );
 
     if (!response.ok) {
@@ -106,13 +101,13 @@ form.addEventListener("submit", async (event) => {
       // Rating
       const rating =
         hotel.rating
-          ? `<p>${hotel.rating} / 5</p>`
+          ? `<p class="rating">Average Rating: ${hotel.rating} / 5</p>`
           : "";
 
       // Reviews
       const reviews =
         hotel.reviews
-          ? `<p>${hotel.reviews} reviews</p>`
+          ? `<p class="reviews">${hotel.reviews} reviews</p>`
           : "";
 
       // Price per night
@@ -130,21 +125,23 @@ form.addEventListener("submit", async (event) => {
       const total =
         hotel.total_rate?.lowest
           ? `
-            <p>
+            <p class="total">
               Total:
               ${hotel.total_rate.lowest}
             </p>
           `
           : "";
 
+      // Select button
+      const selectButton = `<button class="select-hotel" data-id="${hotel.property_token}">Select hotel</button>`;
+
       // Description
       const description =
         hotel.description
-          ? `<p>${hotel.description}</p>`
+          ? `<p class="description">${hotel.description}</p>`
           : "";
 
-      hotelElement.innerHTML = `
-        ${image}
+      hotelElement.innerHTML = `${image}
 
         <div class="hotel-info">
 
@@ -152,7 +149,7 @@ form.addEventListener("submit", async (event) => {
             ${hotel.name || "Unnamed Hotel"}
           </h2>
 
-          <p>
+          <p class="type">
             ${hotel.type || "Hotel"}
           </p>
 
@@ -166,12 +163,30 @@ form.addEventListener("submit", async (event) => {
 
           ${description}
 
-        </div>
+          ${selectButton}
 
-        <div class="clear"></div>
-      `;
+        </div>`;
 
       results.appendChild(hotelElement);
+    });
+
+    document.querySelectorAll(".select-hotel").forEach(btn => {
+      btn.addEventListener("click", function() {
+
+        // Deactivate all other buttons
+        document.querySelectorAll(".select-hotel").forEach(otherBtn => {
+          if (otherBtn !== this) {
+            otherBtn.classList.remove("selected");
+            otherBtn.textContent = "Select hotel"; //TODO: fix working on the toggle
+          }
+        });
+
+        // Toggle
+        this.classList.toggle("selected");
+        this.textContent = "Selected";
+
+        //console.log("Hotel selected for itinerary:", this.getAttribute("data-id"));
+      });
     });
 
   } catch (error) {
@@ -205,14 +220,10 @@ function displaySuggestions(suggestions) {
 
                 locationInput.value = suggestionText;
                 suggestionsContainer.innerHTML = "";
-
             }
         );
 
-        suggestionsContainer.appendChild(
-            suggestionElement
-        );
-
+        suggestionsContainer.appendChild(suggestionElement);
     });
 
 }
