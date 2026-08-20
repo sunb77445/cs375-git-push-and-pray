@@ -1,14 +1,12 @@
 let axios = require("axios");
 let express = require("express");
-let app = express();
+
 let apiFile = require("../env.json");
 let apiKey = apiFile["restaurant_api_key"];
-let port = 3000;
-let hostname = "localhost";
-app.use(express.static("public"));
+const router = express.Router();
 
 
-app.get("/autocomplete", (req, res) => {
+router.get("/autocomplete", (req, res) => {
   let text = req.query.text;
 
   if (!text) {
@@ -30,7 +28,7 @@ app.get("/autocomplete", (req, res) => {
   });
 });
 
-app.get("/restaurant", (req, res) => {
+router.get("/restaurant", (req, res) => {
   let lat = req.query.lat;
   let lon = req.query.lon;
   let distance = req.query.distance;
@@ -55,6 +53,4 @@ app.get("/restaurant", (req, res) => {
   });
 });
 
-app.listen(port, hostname, () => {
-  console.log(`http://${hostname}:${port}/restaurant.html`);
-});
+module.exports = router;

@@ -1,31 +1,13 @@
-require("dotenv").config();
-
 const express = require("express");
+const router = express.Router();
 
-const {
-    searchFlights
-} = require("./lib/compareFlightPrices");
-
-
-const app = express();
-
-const PORT = 3000;
-
-const SERPAPI_KEY =
-    process.env.SERPAPI_KEY;
+const { searchFlights } = require("../app/public/js/compareFlightPrices");
 
 
-app.use(
-    express.json()
-);
+const SERPAPI_KEY = process.env.SERPAPI_KEY;
 
 
-app.use(
-    express.static("public")
-);
-
-
-app.post(
+router.post(
     "/flights",
     async (req, res) => {
 
@@ -177,33 +159,5 @@ app.post(
 );
 
 
-//Start server:
+module.exports = router;
 
-app.listen(
-    PORT,
-    () => {
-
-        console.log("\n");
-        console.log("========================================");
-
-        console.log(
-            `Server running at http://localhost:${PORT}`
-        );
-
-        console.log("========================================");
-
-        console.log(
-            "SerpApi key:",
-            SERPAPI_KEY
-                ? "LOADED"
-                : "MISSING"
-        );
-
-        console.log(
-            "Flight API: SerpApi Google Flights"
-        );
-
-        console.log("========================================");
-
-    }
-);

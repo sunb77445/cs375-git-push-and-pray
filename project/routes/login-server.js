@@ -1,15 +1,9 @@
-require("dotenv").config();
-
 const express = require("express");
-const sql = require("./db");
+const sql = require("../config/db");
+const router = express.Router(); 
 
-const app = express();
-const PORT = 3000;
 
-app.use(express.json());
-app.use(express.static("public"));
-
-app.post("/signup", (req, res) => {
+router.post("/signup", (req, res) => {
     const {
         username,
         password,
@@ -48,7 +42,7 @@ app.post("/signup", (req, res) => {
 });
 
 
-app.post("/login", (req, res) => {
+router.post("/login", (req, res) => {
 
     const {
         username,
@@ -105,7 +99,5 @@ app.post("/login", (req, res) => {
     });
 });
 
+module.exports = router; 
 
-app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
-});
