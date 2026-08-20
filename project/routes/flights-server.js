@@ -1,10 +1,36 @@
 const express = require("express");
 const router = express.Router();
 
+
+
+const apiFile = require("../env.json");
+const apiKey = apiFile["flights_api_key"];
 const { searchFlights } = require("../app/public/js/compareFlightPrices");
 
 
-const SERPAPI_KEY = process.env.SERPAPI_KEY;
+const SERPAPI_KEY = apiKey;
+
+
+// Used to changing city to 3 digit airport form 
+async function resolveLocation(apiKey, query){
+    if (/^[A-Z]{3}$/.test(query) || query.startsWith("/m/") || query.startsWith("/g/")) {
+    return query;
+  }
+
+  try {
+    const url = `https://serpapi.com/search?q=${encodeURIComponent(query)}&api_key=${apiKey}&engine=google_flights_autocomplete`;
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.suggestions && data.suggestions.length > 0){
+        return data.suggestions[0].id;
+    }
+    return query;
+
+  } catch (err) {
+        return query;
+  }
+}
 
 
 router.post(
@@ -83,6 +109,8 @@ router.post(
 
 
         try {
+            const [newFrom, newTo] = await Promise.all([resolveLocation(SERPAPI_KEY, from), resolveLocation(SERPAPI_KEY, to)]);
+            console.log(newFrom, newTo);
 
             const flights =
                 await searchFlights(
@@ -97,9 +125,9 @@ router.post(
                         cabinClass:
                             cabinClass || "economy",
 
-                        from,
+                        from: newFrom,
 
-                        to,
+                        to: newTo,
 
                         depart,
 

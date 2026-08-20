@@ -50,10 +50,10 @@ const params = new URLSearchParams({
     api_key: apiKey,
 
     departure_id:
-        search.from.trim().toUpperCase(),
+        /^[A-Za-z]{3}$/.test(search.from.trim()) ? search.from.trim().toUpperCase() : search.from.trim().toLowerCase(),
 
     arrival_id:
-        search.to.trim().toUpperCase(),
+        /^[A-Za-z]{3}$/.test(search.to.trim()) ? search.to.trim().toUpperCase() : search.to.trim().toLowerCase(),
 
     outbound_date:
         search.depart,
@@ -103,7 +103,7 @@ const params = new URLSearchParams({
     console.log("========================================");
 
     console.log(
-        `${search.from.toUpperCase()} → ${search.to.toUpperCase()}`
+        `${search.from} → ${search.to}`
     );
 
     console.log(

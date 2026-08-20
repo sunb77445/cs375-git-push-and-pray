@@ -35,22 +35,43 @@ async function getHotels(){
 }
 
 async function getFlights(){
-    let flightResponse = await fetch(`/flights?passengers=${numTravelers}?from=${fromCity}?to=${destCity}?depart=${fromDate}?returnDate=${toDate}`);
-    let flightBody = await response.json();
+    let flightResponse = await fetch("/flights", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        }, 
+        body: JSON.stringify({
+            passengers: numTravelers,
+            from: fromCity,
+            to: destCity,
+            depart: fromDate,
+            returnDate: toDate
+        }),
+    });
+    let flightBody = await flightResponse.json();
     console.log(flightBody);
-
+    renderResults(flightBody.flights, flightPage);
 }
 
 async function getFood(){
-    let foodResponse = fetch(`/restaurant?city=${destCity}?country=${destCountry}`);
-    let foodBody = await response.json();
-    console.log(foodBody); 
+    let geoResponse = await fetch(`/geocode?city=${destCity}`);
+    let geoBody = await geoResponse.json();
+    let lat = geoBody.lat;
+    let lon = geoBody.lon;
+    console.log(lat, lon);
+    console.log(`/restaurant?lat=${lat}&lon=${lon}&distance=1000`);
+    let foodResponse = await fetch(`/restaurant?lat=${lat}&lon=${lon}&distance=1000`);
+    let foodBody = await foodResponse.json();
 
+    console.log(foodBody); 
+    renderRestaurants(foodBody.features, foodPage);
 }
 
 // Load hotels by default
 window.addEventListener('load', async (event) => {
     await getHotels();
+    await getFlights();
+    await getFood();
     loadingScreen.style.display = 'none';
 });
 

@@ -2,11 +2,75 @@ let locationInput = document.getElementById("location");
 let suggestions = document.getElementById("suggestions");
 let distanceInput = document.getElementById("distance");
 let sendButton = document.getElementById("send");
-let error = document.getElementById("error");
+let error2 = document.getElementById("error");
 let result = document.getElementById("result");
 
 let selectedLat = null;
 let selectedLon = null;
+
+// Displaying restaurants
+function renderRestaurants(data, element){
+ data.forEach(place => {
+
+    let restaurant = document.createElement("div");
+
+    //Name
+    let name = document.createElement("h2");
+    let restaurantName = place.properties.name || "Unknown Restaurant";
+    name.textContent = restaurantName;
+
+    //Address 
+    let address = document.createElement("p");
+    let fullAddress = place.properties.formatted ||
+        `${place.properties.address_line1 || ""} ${place.properties.address_line2 || ""}`.trim();
+    address.textContent = fullAddress ? `Address: ${fullAddress}` : "Address: No address available";
+
+    //Website
+    let websiteContainer = document.createElement("p");
+    if (place.properties.website) {
+        let websiteLink = document.createElement("a");
+        websiteLink.href = place.properties.website;
+        websiteLink.textContent = "Visit Website";
+        websiteContainer.appendChild(websiteLink);
+    }
+    else {
+        websiteContainer.textContent = "Website: Not available";
+    }
+
+    //Distance Calculation
+    let distanceDisplay = document.createElement("p");
+    let restLat = place.properties.lat;
+    let restLon = place.properties.lon;
+
+    if (restLat && restLon && selectedLat && selectedLon) {
+        let distInMeters = calculateDistance(selectedLat, selectedLon, restLat, restLon);
+        let distInMiles = (distInMeters * 0.000621371).toFixed(2);
+        distanceDisplay.textContent = `Distance: ${distInMiles} miles`;
+    }
+    else {
+        distanceDisplay.textContent = "Distance: Coordinates unavailable";
+    }
+
+    //Select Button
+    let selectBtn = document.createElement("button");
+    selectBtn.textContent = "Select";
+
+
+    selectBtn.addEventListener("click", () => {
+        selectBtn.textContent = "Added!";
+        selectBtn.style.backgroundColor = "green";
+        selectBtn.disabled = true;
+    });
+
+    restaurant.appendChild(name);
+    restaurant.appendChild(address);
+    restaurant.appendChild(websiteContainer);
+    restaurant.appendChild(distanceDisplay);
+    restaurant.appendChild(selectBtn);
+
+    element.appendChild(restaurant);
+
+})};
 
 
 // DISTANCE CALCULATOR (Haversine Formula)
@@ -82,11 +146,11 @@ locationInput.addEventListener("input", () => {
 // FIND RESTAURANTS
 sendButton.addEventListener("click", () => {
 
-    error.textContent = "";
+    error2.textContent = "";
     result.replaceChildren();
 
     if (selectedLat === null || selectedLon === null) {
-        error.textContent = "Please select a location from the suggestions.";
+        error2.textContent = "Please select a location from the suggestions.";
         return;
     }
 
@@ -108,69 +172,11 @@ sendButton.addEventListener("click", () => {
                 return;
             }
 
-            restaurants.forEach(place => {
-
-                let restaurant = document.createElement("div");
-
-                //Name
-                let name = document.createElement("h2");
-                let restaurantName = place.properties.name || "Unknown Restaurant";
-                name.textContent = restaurantName;
-
-                //Address 
-                let address = document.createElement("p");
-                let fullAddress = place.properties.formatted ||
-                    `${place.properties.address_line1 || ""} ${place.properties.address_line2 || ""}`.trim();
-                address.textContent = fullAddress ? `Address: ${fullAddress}` : "Address: No address available";
-
-                //Website
-                let websiteContainer = document.createElement("p");
-                if (place.properties.website) {
-                    let websiteLink = document.createElement("a");
-                    websiteLink.href = place.properties.website;
-                    websiteLink.textContent = "Visit Website";
-                    websiteContainer.appendChild(websiteLink);
-                }
-                else {
-                    websiteContainer.textContent = "Website: Not available";
-                }
-
-                //Distance Calculation
-                let distanceDisplay = document.createElement("p");
-                let restLat = place.properties.lat;
-                let restLon = place.properties.lon;
-
-                if (restLat && restLon && selectedLat && selectedLon) {
-                    let distInMeters = calculateDistance(selectedLat, selectedLon, restLat, restLon);
-                    let distInMiles = (distInMeters * 0.000621371).toFixed(2);
-                    distanceDisplay.textContent = `Distance: ${distInMiles} miles`;
-                }
-                else {
-                    distanceDisplay.textContent = "Distance: Coordinates unavailable";
-                }
-
-                //Select Button
-                let selectBtn = document.createElement("button");
-                selectBtn.textContent = "Select";
-
-
-                selectBtn.addEventListener("click", () => {
-                    selectBtn.textContent = "Added!";
-                    selectBtn.style.backgroundColor = "green";
-                    selectBtn.disabled = true;
-                });
-
-                restaurant.appendChild(name);
-                restaurant.appendChild(address);
-                restaurant.appendChild(websiteContainer);
-                restaurant.appendChild(distanceDisplay);
-                restaurant.appendChild(selectBtn);
-
-                result.appendChild(restaurant);
-            });
+            renderRestaurants(restaurants, result);
+            
         })
         .catch(err => {
             console.log(err);
-            error.textContent = "There was an error finding restaurants.";
+            error2.textContent = "There was an error finding restaurants.";
         });
 });
