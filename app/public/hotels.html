@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Search</title>
+    <link rel="stylesheet" href="hotels.css">
+</head>
+
+<body>
+
+    <div id="hotel-search" >
+    <h1>Hotel Search</h1>
+
+    <form id="searchForm" class="search-box">
+
+        <input type="text" id="location" placeholder="Where do you want to stay?" required>
+
+        <label>
+            Check-in:
+            <input type="date" id="checkIn" required>
+        </label>
+
+        <label>
+            Check-out:
+            <input type="date" id="checkOut" required>
+        </label>
+
+        <label>
+            Guests:
+            <input type="number" id="guests" value="2" min="1" max="20">
+        </label>
+
+        <button type="submit">
+            Search Hotels
+        </button>
+
+    </form>
+  </div>
+    
+
+    <div id="loading">
+        <!----Searching for hotels...--->
+    </div>
+
+    <div id="error"></div>
+
+    <div id="results"></div>
+
+    <script src="hotels.js"></script>
+
+</body>
+
+</html>
