@@ -3,7 +3,7 @@ const express = require("express");
 
 const app = express();
 const apiFile = require("../env.json");
-const apiKey = apiFile["apiKey"];
+const hotelApiKey = apiFile["hotel_api_key"];
 
 const port = 3000;
 const hostname = "localhost";
@@ -26,7 +26,7 @@ app.get("/api/hotels", async (req, res) => {
         check_in_date: check_in_date,
         check_out_date: check_out_date,
         adults: adults,
-        api_key: apiKey
+        api_key: hotelApiKey
       }
     });
     res.json(response.data);
@@ -54,7 +54,7 @@ app.get("/api/hotel-autocomplete", async (req, res) => {
                 params: {
                     engine: "google_hotels_autocomplete",
                     q: q,
-                    api_key: apiKey
+                    api_key: hotelApiKey
                 }
             }
         );
