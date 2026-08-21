@@ -54,6 +54,23 @@
     </main>
 
     <script>
+
+        fetch("/current-user")
+            .then(response => response.json())
+            .then(data => {
+
+                if (!data.loggedIn) {
+                    window.location.href = "login.html";
+                    return;
+                }
+
+                console.log("Logged in user:", data.user);
+
+                document.querySelector("h1").textContent =
+                    data.user.username + "'s Travel Planner";
+
+            });
+
         document.getElementById("userButton").addEventListener("click", function() {
             window.location.href = "login.html";
         });
