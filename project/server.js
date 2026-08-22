@@ -12,6 +12,7 @@ const flightsRouter = require('./routes/flights-server');
 const hotelRouter = require('./routes/hotel-server');
 const loginRouter = require('./routes/login-server');
 const friendRouter = require('./routes/friend-server');
+const tripRouter = require('./routes/trip-server');
 
 app.use(express.static(path.join(__dirname, 'app','public')));
 app.use(express.static(path.join(__dirname, 'app','public','html')));
@@ -36,6 +37,7 @@ app.use('/', flightsRouter);
 app.use('/', hotelRouter);
 app.use('/', loginRouter);
 app.use('/', friendRouter);
+app.use('/', tripRouter);
 
 app.listen(port, hostname, () => {
     console.log(`http://${hostname}:${port}/`);

@@ -1,7 +1,8 @@
  const resultsDiv = document.getElementById("results");
+        const flightSearchForm = document.getElementById("flightSearchForm");
 
-        document
-            .getElementById("flightSearchForm")
+        if (flightSearchForm) {
+        flightSearchForm
             .addEventListener("submit", async function(event) {
 
                 event.preventDefault();
@@ -63,8 +64,11 @@
                 }
 
             });
+        }
 
 
+
+        let selectedFlight = null;
 
         function renderResults(flights, element) {
 
@@ -90,5 +94,22 @@
                 `;
 
                 element.appendChild(card);
+
+                const addButton = card.querySelector(".add-btn");
+
+                addButton.addEventListener("click", function() {
+
+                    document
+                        .querySelectorAll(".add-btn")
+                        .forEach(function(button) {
+                            button.textContent = "Add to itinerary";
+                            button.disabled = false;
+                        });
+
+                    selectedFlight = flight;
+
+                    addButton.textContent = "✓ Selected for trip";
+                    addButton.disabled = true;
+                });
             });
         }
