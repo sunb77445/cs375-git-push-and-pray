@@ -32,6 +32,7 @@ async function getHotels(){
     console.log(hotelBody);
 
     formatHotels(hotelBody.properties, hotelPage);
+    selectHotel(hotelPage);
 }
 
 async function getFlights(){

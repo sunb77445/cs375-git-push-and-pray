@@ -11,6 +11,7 @@ function formatHotels(hotelList, element){
       const hotelElement = document.createElement("div");
       hotelElement.className = "hotel";
 
+      // card fields with optional checking (show if they exist)
       // Hotel image
       const image = hotel.images &&hotel.images.length > 0
           ? `
@@ -24,13 +25,13 @@ function formatHotels(hotelList, element){
       // Rating
       const rating =
         hotel.rating
-          ? `<p>${hotel.rating} / 5</p>`
+          ? `<p class = "rating">Average Rating: ${hotel.rating} / 5</p>`
           : "";
 
       // Reviews
       const reviews =
         hotel.reviews
-          ? `<p>${hotel.reviews} reviews</p>`
+          ? `<p class = "reviews">${hotel.reviews} reviews</p>`
           : "";
 
       // Price per night
@@ -48,21 +49,23 @@ function formatHotels(hotelList, element){
       const total =
         hotel.total_rate?.lowest
           ? `
-            <p>
+            <p class = "total">
               Total:
               ${hotel.total_rate.lowest}
             </p>
           `
           : "";
 
-      // Description
+      const selectButton = `<button class="select-hotel" data-id="${hotel.property_token}">Select hotel</button>`;
+
+
+          // Description
       const description =
         hotel.description
-          ? `<p>${hotel.description}</p>`
+          ? `<p class = "description">${hotel.description}</p>`
           : "";
 
-      hotelElement.innerHTML = `
-        ${image}
+      hotelElement.innerHTML = `${image}
 
         <div class="hotel-info">
 
@@ -70,19 +73,12 @@ function formatHotels(hotelList, element){
             ${hotel.name || "Unnamed Hotel"}
           </h2>
 
-          <p>
-            ${hotel.type || "Hotel"}
-          </p>
-
           ${rating}
-
           ${reviews}
-
           ${price}
-
           ${total}
-
           ${description}
+          ${selectButton}
 
         </div>
 
@@ -97,17 +93,13 @@ function formatHotels(hotelList, element){
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  const location =
-    document.getElementById("location").value;
+  const location = document.getElementById("location").value;
 
-  const checkIn =
-    document.getElementById("checkIn").value;
+  const checkIn = document.getElementById("checkIn").value;
 
-  const checkOut =
-    document.getElementById("checkOut").value;
+  const checkOut = document.getElementById("checkOut").value;
 
-  const guests =
-    document.getElementById("guests").value;
+  const guests = document.getElementById("guests").value;
 
   results.innerHTML = "";
   error.textContent = "";
@@ -122,12 +114,10 @@ form.addEventListener("submit", async (event) => {
       
     });
 
-    const response = await fetch(
-      `/api/hotels?${params}`
-    );
+    const response = await fetch(`/api/hotels?${params}`);
 
     if (!response.ok) {
-      throw new Error("Hotel search failed.");
+        throw new Error("Hotel search failed.");
     }
 
     const data = await response.json();
@@ -142,10 +132,30 @@ form.addEventListener("submit", async (event) => {
       return;
     }
 
-    formatHotels(data.properties);
+    formatHotels(data.properties, results);
+    selectHotel(results); //event listener for selecting hotel
 
   } catch (error) {
-
     error.textContent = error.message;
   }
 });
+
+function selectHotel(container) {
+    container.addEventListener("click", function(event) {
+        if (event.target && event.target.classList.contains("select-hotel")) {
+            const btn = event.target;
+            const isSelected = btn.classList.contains("selected");
+
+            // deselect all other all buttons
+            container.querySelectorAll(".select-hotel").forEach(otherBtn => {
+                otherBtn.classList.remove("selected");
+                otherBtn.textContent = "Select hotel";
+            });
+
+            if (!isSelected) {
+                btn.classList.add("selected");
+                btn.textContent = "Selected";
+            }
+        }
+    });
+}
