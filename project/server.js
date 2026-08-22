@@ -18,18 +18,18 @@ app.use(express.static(path.join(__dirname, 'app','public','html')));
 app.use(express.json());
 
 
-app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-
-    cookie: {
-        httpOnly: true,
-        secure: false,
-        sameSite: "strict",
-        maxAge: 1000 * 60 * 60 * 24
-    }
+app.use(session({ 
+  secret: process.env.SESSION_SECRET || 'development_fallback_secret_key', 
+  resave: false, 
+  saveUninitialized: false, 
+  cookie: { 
+    httpOnly: true, 
+    secure: false, 
+    sameSite: "strict", 
+    maxAge: 1000 * 60 * 60 * 24 
+  } 
 }));
+
 
 app.use('/', foodRouter);
 app.use('/', flightsRouter);
