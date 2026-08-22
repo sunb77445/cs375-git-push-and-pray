@@ -190,6 +190,7 @@ router.get("/notifications", async (req, res) => {
                 n.friend_request_id
             FROM notifications n
             WHERE n.user_id = ${req.session.userId}
+            AND n.is_read = false
             ORDER BY n.created_at DESC
         `;
 
