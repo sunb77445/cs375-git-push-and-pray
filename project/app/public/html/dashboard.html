@@ -21,25 +21,24 @@
 
         <h1>Travel Planner</h1>
 
-        <section id="friends">
-
-            <h2>Add Friend</h2>
-
-            <input
-                type="text"
-                id="friendUsername"
-                placeholder="Enter Username"
-            >
-
-            <button id="searchFriendButton">
-                Search
-            </button>
-
-            <div id="friendResult"></div>
-
-        </section>
 
         <div class="header-buttons">
+
+            <button id="friendButton">👥</button>
+
+            <div id="friendDropdown" class="friend-dropdown">
+                <h3>Add Friend</h3>
+                <input
+                    type="text"
+                    id="friendUsername"
+                    placeholder="Enter Username"
+                >
+                <button id="searchFriendButton">
+                    Search
+                </button>
+                <div id="friendResult"></div>
+            </div>
+
             <button id="notificationButton">🔔</button>
 
             <div id="notificationDropdown" class="notification-dropdown">
@@ -125,6 +124,9 @@
             document.getElementById("userDropdown").classList.toggle("show");
         });
 
+        document.getElementById("friendButton").addEventListener("click", function() {
+            document.getElementById("friendDropdown").classList.toggle("show");
+        });
 
         document.getElementById("notificationButton")
             .addEventListener("click", async function() {
