@@ -363,5 +363,97 @@ router.post("/friends/requests/:id/decline", async (req, res) => {
     }
 });
 
+router.post("/notifications/:id/read", async (req, res) => {
+    try {
+        if (!req.session.userId) {
+            return res.status(401).json({
+                success: false,
+                message: "You must be logged in"
+            });
+        }
+
+        const notificationId = req.params.id;
+
+        const result = await sql`
+            UPDATE notifications
+            SET is_read = true
+            WHERE id = ${notificationId}
+            AND user_id = ${req.session.userId}
+            RETURNING id
+        `;
+
+        if (result.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Notification not found"
+            });
+        }
+
+        res.json({
+            success: true,
+            message: "Notification marked as read"
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            success: false,
+            message: "Could not mark notification as read"
+        });
+    }
+});
+
+router.get("/friends", async (req, res) => {
+    try {
+        if (!req.session.userId) {
+            return res.status(401).json({
+                success: false,
+                message: "You must be logged in"
+            });
+        }
+
+        const userId = req.session.userId;
+
+        const friends = await sql`
+            SELECT
+                u.id,
+                u.username,
+                u.first_name,
+                u.last_name,
+                u.email
+            FROM friend_requests fr
+            JOIN users u
+                ON (
+                    CASE
+                        WHEN fr.sender_id = ${userId}
+                        THEN fr.receiver_id
+                        ELSE fr.sender_id
+                    END
+                ) = u.id
+            WHERE
+                (
+                    fr.sender_id = ${userId}
+                    OR fr.receiver_id = ${userId}
+                )
+                AND fr.status = 'accepted'
+            ORDER BY u.username
+        `;
+
+        res.json({
+            success: true,
+            friends
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            success: false,
+            message: "Could not get friends"
+        });
+    }
+});
+
 
 module.exports = router;

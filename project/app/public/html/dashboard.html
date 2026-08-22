@@ -27,16 +27,29 @@
             <button id="friendButton">👥</button>
 
             <div id="friendDropdown" class="friend-dropdown">
+
+                <h3>Friends</h3>
+
+                <div id="friendsList">
+                    <p>Loading friends...</p>
+                </div>
+
+                <hr>
+
                 <h3>Add Friend</h3>
+
                 <input
                     type="text"
                     id="friendUsername"
                     placeholder="Enter Username"
                 >
+
                 <button id="searchFriendButton">
                     Search
                 </button>
+
                 <div id="friendResult"></div>
+
             </div>
 
             <button id="notificationButton">🔔</button>
@@ -124,8 +137,9 @@
             document.getElementById("userDropdown").classList.toggle("show");
         });
 
-        document.getElementById("friendButton").addEventListener("click", function() {
+        document.getElementById("friendButton").addEventListener("click", async function() {
             document.getElementById("friendDropdown").classList.toggle("show");
+            await loadFriends();
         });
 
         document.getElementById("notificationButton")
@@ -228,6 +242,26 @@
             });
 
 
+        async function markNotificationAsRead(notificationId) {
+            try {
+                const response = await fetch(
+                    `/notifications/${notificationId}/read`,
+                    {
+                        method: "POST"
+                    }
+                );
+
+                const data = await response.json();
+
+                if (data.success) {
+                    await loadNotifications();
+                }
+
+            } catch (error) {
+                console.error("Could not mark notification as read:", error);
+            }
+        }
+
         async function loadNotifications() {
 
             try {
@@ -245,10 +279,7 @@
                 const notificationButton =
                     document.getElementById("notificationButton");
 
-                const unreadCount =
-                    data.notifications.filter(
-                        notification => !notification.is_read
-                    ).length;
+                const unreadCount = data.notifications.length;
 
                 if (unreadCount > 0) {
                     notificationButton.classList.add("has-notifications");
@@ -291,70 +322,147 @@
 
                             </div>
                         `;
-                    }
 
-                    if (notification.type === "friend_request_accepted") {
-
-                        notificationElement.innerHTML = `
-                            <p>${notification.message}</p>
-                        `;
-                    }
-
-                    if (notification.type === "friend_request_declined") {
+                    } else {
 
                         notificationElement.innerHTML = `
                             <p>${notification.message}</p>
                         `;
+
+                        notificationElement.addEventListener(
+                            "click",
+                            async function() {
+
+                                await markNotificationAsRead(notification.id);
+
+                            }
+                        );
+
                     }
 
                     list.appendChild(notificationElement);
+
                 });
+
 
                 document
                     .querySelectorAll(".acceptButton")
                     .forEach(button => {
 
-                        button.addEventListener("click", async function() {
+                        button.addEventListener(
+                            "click",
+                            async function() {
 
-                            const requestId = this.dataset.id;
+                                const requestId = this.dataset.id;
 
-                            const response = await fetch(
-                                `/friends/requests/${requestId}/accept`,
-                                {
-                                    method: "POST"
+                                const response = await fetch(
+                                    `/friends/requests/${requestId}/accept`,
+                                    {
+                                        method: "POST"
+                                    }
+                                );
+
+                                const result = await response.json();
+
+                                if (!result.success) {
+                                    alert(result.message);
+                                    return;
                                 }
-                            );
 
-                            const result = await response.json();
-                            const notificationItem = this.closest(".notification-item");
-                            notificationItem.innerHTML = `<p>${result.message || "You accepted the friend request."}</p>`;
-                        });                      
+                                await loadNotifications();
+                                await loadFriends();
+
+                            }
+                        );
+
                     });
+
 
                 document
                     .querySelectorAll(".declineButton")
                     .forEach(button => {
 
-                        button.addEventListener("click", async function() {
+                        button.addEventListener(
+                            "click",
+                            async function() {
 
-                            const requestId = this.dataset.id;
+                                const requestId = this.dataset.id;
 
-                            const response = await fetch(
-                                `/friends/requests/${requestId}/decline`,
-                                {
-                                    method: "POST"
+                                const response = await fetch(
+                                    `/friends/requests/${requestId}/decline`,
+                                    {
+                                        method: "POST"
+                                    }
+                                );
+
+                                const result = await response.json();
+
+                                if (!result.success) {
+                                    alert(result.message);
+                                    return;
                                 }
-                            );
 
-                            const result = await response.json();
+                                await loadNotifications();
+                                await loadFriends();
 
-                            const notificationItem = this.closest(".notification-item");
-                            notificationItem.innerHTML = `<p>${result.message || "You declined the friend request."}</p>`;
-                        });
+                            }
+                        );
+
                     });
 
             } catch (error) {
-                console.error("Could not load notifications:", error);
+
+                console.error(
+                    "Could not load notifications:",
+                    error
+                );
+
+            }
+        }
+
+        async function loadFriends() {
+            try {
+
+                const response = await fetch("/friends");
+                const data = await response.json();
+
+                const list = document.getElementById("friendsList");
+
+                if (!data.success) {
+                    list.innerHTML = `<p>${data.message}</p>`;
+                    return;
+                }
+
+                if (data.friends.length === 0) {
+                    list.innerHTML = "<p>No friends yet.</p>";
+                    return;
+                }
+
+                list.innerHTML = "";
+
+                data.friends.forEach(friend => {
+
+                    const friendElement = document.createElement("div");
+
+                    friendElement.classList.add("friend-item");
+
+                    friendElement.innerHTML = `
+                        <p>
+                            <strong>${friend.username}</strong>
+                            <br>
+                            ${friend.first_name} ${friend.last_name}
+                        </p>
+                    `;
+
+                    list.appendChild(friendElement);
+                });
+
+            } catch (error) {
+
+                console.error("Could not load friends:", error);
+
+                document.getElementById("friendsList").innerHTML =
+                    "<p>Could not load friends.</p>";
             }
         }
 
