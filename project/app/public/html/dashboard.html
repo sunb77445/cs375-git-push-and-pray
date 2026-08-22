@@ -41,6 +41,16 @@
 
         <div class="header-buttons">
             <button id="notificationButton">🔔</button>
+
+            <div id="notificationDropdown" class="notification-dropdown">
+
+                <h3>Notifications</h3>
+
+                <div id="notificationsList">
+                    <p>No notifications.</p>
+                </div>
+
+            </div>
             
             <div class="user-menu">
                 <button id="userButton">👤</button>
@@ -85,122 +95,271 @@
 
     <script>
 
-        fetch("/current-user")
-            .then(response => response.json())
-            .then(data => {
+        async function loadCurrentUser() {
+            const response = await fetch("/current-user");
+            const data = await response.json();
 
-                if (!data.loggedIn) {
-                    window.location.href = "login.html";
-                    return;
-                }
+            if (!data.loggedIn) {
+                window.location.href = "login.html";
+                return;
+            }
 
-                console.log("Logged in user:", data.user);
+            document.querySelector("h1").textContent =
+                data.user.username + "'s Travel Planner";
 
-                document.querySelector("h1").textContent =
-                    data.user.username + "'s Travel Planner";
+            document.getElementById("username").textContent =
+                data.user.username;
 
-                document.getElementById("username").textContent =
-                    data.user.username;
+            document.getElementById("firstName").textContent =
+                data.user.first_name;
 
-                document.getElementById("firstName").textContent =
-                    data.user.first_name;
+            document.getElementById("lastName").textContent =
+                data.user.last_name;
 
-                document.getElementById("lastName").textContent =
-                    data.user.last_name;
+            document.getElementById("email").textContent =
+                data.user.email;
+        }
 
-                document.getElementById("email").textContent =
-                    data.user.email;
-            });
 
         document.getElementById("userButton").addEventListener("click", function() {
-
             document.getElementById("userDropdown").classList.toggle("show");
-
         });
 
-        document.getElementById("logoutButton").addEventListener("click", function() {
 
-            fetch("/logout", {
-                method: "POST"
-            })
-            .then(response => response.json())
-            .then(data => {
+        document.getElementById("notificationButton")
+            .addEventListener("click", async function() {
+
+                document
+                    .getElementById("notificationDropdown")
+                    .classList.toggle("show");
+
+                await loadNotifications();
+            });
+
+
+        document.getElementById("logoutButton")
+            .addEventListener("click", async function() {
+
+                const response = await fetch("/logout", {
+                    method: "POST"
+                });
+
+                const data = await response.json();
 
                 if (data.success) {
                     window.location.href = "login.html";
                 }
-
             });
 
-        });
 
-        document.getElementById("createPlanButton").addEventListener("click", function() {
+        document.getElementById("createPlanButton")
+            .addEventListener("click", function() {
 
-            window.location.href = "create.html";
+                window.location.href = "create.html";
+            });
 
-        });
 
-        document.getElementById("searchFriendButton").addEventListener("click", function() {
+        document.getElementById("searchFriendButton")
+            .addEventListener("click", async function() {
 
-        const username =
-            document.getElementById("friendUsername").value.trim();
-
-        if (!username) {
-            return;
-        }
-
-        fetch("/users/" + encodeURIComponent(username))
-            .then(response => response.json())
-            .then(data => {
+                const username =
+                    document.getElementById("friendUsername").value.trim();
 
                 const result =
                     document.getElementById("friendResult");
 
-                if (!data.success) {
-
-                    result.innerHTML =
-                        "<p>User not found.</p>";
-
+                if (!username) {
+                    result.innerHTML = "<p>Please enter a username.</p>";
                     return;
                 }
 
-                result.innerHTML = `
-                    <p>
-                        ${data.user.username}
-                        (${data.user.first_name} ${data.user.last_name})
-                    </p>
+                try {
+                    const response = await fetch(
+                        "/users/" + encodeURIComponent(username)
+                    );
 
-                    <button id="addFriendButton">
-                        Add Friend
-                    </button>
-                `;
+                    const data = await response.json();
 
-                document.getElementById("addFriendButton")
-                    .addEventListener("click", function() {
+                    if (!data.success) {
+                        result.innerHTML = `<p>${data.message}</p>`;
+                        return;
+                    }
 
-                        fetch("/friends/request", {
-                            method: "POST",
+                    result.innerHTML = `
+                        <p>
+                            ${data.user.username}
+                            (${data.user.first_name} ${data.user.last_name})
+                        </p>
 
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
+                        <button id="addFriendButton">
+                            Add Friend
+                        </button>
+                    `;
 
-                            body: JSON.stringify({
-                                receiverId: data.user.id
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(result => {
+                    document.getElementById("addFriendButton")
+                        .addEventListener("click", async function() {
 
-                            alert(result.message);
+                            const response = await fetch(
+                                "/friends/request",
+                                {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json"
+                                    },
+                                    body: JSON.stringify({
+                                        receiverId: data.user.id
+                                    })
+                                }
+                            );
 
+                            const result = await response.json();
+
+                            document.getElementById("friendResult").innerHTML =
+                                `<p>${result.message}</p>`;
                         });
 
-                    });
-
+                } catch (error) {
+                    console.error(error);
+                    result.innerHTML =
+                        "<p>Something went wrong.</p>";
+                }
             });
 
-    });
+
+        async function loadNotifications() {
+
+            try {
+
+                const response = await fetch("/notifications");
+                const data = await response.json();
+
+                if (!data.success) {
+                    return;
+                }
+
+                const list =
+                    document.getElementById("notificationsList");
+
+                const notificationButton =
+                    document.getElementById("notificationButton");
+
+                const unreadCount =
+                    data.notifications.filter(
+                        notification => !notification.is_read
+                    ).length;
+
+                if (unreadCount > 0) {
+                    notificationButton.classList.add("has-notifications");
+                } else {
+                    notificationButton.classList.remove("has-notifications");
+                }
+
+                if (data.notifications.length === 0) {
+                    list.innerHTML = "<p>No notifications.</p>";
+                    return;
+                }
+
+                list.innerHTML = "";
+
+                data.notifications.forEach(notification => {
+
+                    const notificationElement =
+                        document.createElement("div");
+
+                    notificationElement.classList.add("notification-item");
+
+                    if (notification.type === "friend_request") {
+
+                        notificationElement.innerHTML = `
+                            <p>${notification.message}</p>
+
+                            <div class="friend-request-buttons">
+
+                                <button
+                                    class="acceptButton"
+                                    data-id="${notification.friend_request_id}">
+                                    O
+                                </button>
+
+                                <button
+                                    class="declineButton"
+                                    data-id="${notification.friend_request_id}">
+                                    X
+                                </button>
+
+                            </div>
+                        `;
+                    }
+
+                    if (notification.type === "friend_request_accepted") {
+
+                        notificationElement.innerHTML = `
+                            <p>${notification.message}</p>
+                        `;
+                    }
+
+                    if (notification.type === "friend_request_declined") {
+
+                        notificationElement.innerHTML = `
+                            <p>${notification.message}</p>
+                        `;
+                    }
+
+                    list.appendChild(notificationElement);
+                });
+
+                document
+                    .querySelectorAll(".acceptButton")
+                    .forEach(button => {
+
+                        button.addEventListener("click", async function() {
+
+                            const requestId = this.dataset.id;
+
+                            const response = await fetch(
+                                `/friends/requests/${requestId}/accept`,
+                                {
+                                    method: "POST"
+                                }
+                            );
+
+                            const result = await response.json();
+
+                            await loadNotifications();
+                        });
+                    });
+
+                document
+                    .querySelectorAll(".declineButton")
+                    .forEach(button => {
+
+                        button.addEventListener("click", async function() {
+
+                            const requestId = this.dataset.id;
+
+                            const response = await fetch(
+                                `/friends/requests/${requestId}/decline`,
+                                {
+                                    method: "POST"
+                                }
+                            );
+
+                            const result = await response.json();
+
+                            await loadNotifications();
+                        });
+                    });
+
+            } catch (error) {
+                console.error("Could not load notifications:", error);
+            }
+        }
+
+
+        loadCurrentUser();
+        loadNotifications();
+
+        setInterval(loadNotifications, 5000);
 
         // TO DO: add fetch call/api endpoint to database for dynamically rendering saved trips
         // server should validate user and then return trips saved in db correlating to that user_id

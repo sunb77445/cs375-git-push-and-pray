@@ -30,6 +30,7 @@ header h1 {
 .header-buttons {
     display: flex;
     gap: 12px;
+    position: relative;
 }
 
 .header-buttons button {
@@ -121,4 +122,119 @@ main {
 
     font-size: 14px;
     color: #4A6572;
+}
+
+.user-menu {
+    position: relative;
+}
+
+.user-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 45px;
+
+    width: 250px;
+    padding: 20px;
+
+    background-color: #F6F1E9;
+    border: 2px solid #4A6572;
+    border-radius: 10px;
+
+    z-index: 100;
+}
+
+.user-dropdown.show {
+    display: block;
+}
+
+.user-dropdown p {
+    margin: 8px 0;
+    color: #2C3A47;
+}
+
+#logoutButton {
+    width: 100%;
+    margin-top: 15px;
+    padding: 10px;
+
+    background-color: #B84A62;
+    color: #F6F1E9;
+
+    border: none;
+    border-radius: 6px;
+
+    cursor: pointer;
+}
+
+.notification-dropdown {
+    display: none;
+    position: absolute;
+    right: 60px;
+    top: 60px;
+    width: 300px;
+    padding: 20px;
+    background-color: #F6F1E9;
+    border: 2px solid #4A6572;
+    border-radius: 10px;
+    z-index: 100;
+}
+
+.notification-dropdown.show {
+    display: block;
+}
+
+.notification-dropdown h3 {
+    margin-top: 0;
+    color: #4A6572;
+}
+
+.notification-item {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #D9B99B;
+}
+
+.notification-item p {
+    color: #4A6572;
+    margin: 0 0 10px 0;
+}
+.friend-request-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.notification-dropdown .acceptButton,
+.notification-dropdown .declineButton {
+    width: 35px;
+    height: 35px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-family: "Comfortaa", sans-serif;
+    font-weight: bold;
+    color: #F6F1E9;
+}
+
+.notification-dropdown .acceptButton {
+    background-color: #2ecc71;
+}
+
+.notification-dropdown .declineButton {
+    background-color: #e74c3c;
+}
+
+#notificationButton {
+    position: relative;
+}
+
+#notificationButton.has-notifications::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 10px;
+    height: 10px;
+    background-color: #B84A62;
+    border-radius: 50%;
 }
