@@ -313,3 +313,34 @@ main {
 #friendResult button:hover {
     background-color: #27ae60;
 }
+
+#friendsList {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+}
+
+.friend-item {
+    padding: 10px;
+    margin-bottom: 8px;
+
+    background-color: white;
+    border: 1px solid #D9B99B;
+    border-radius: 8px;
+}
+
+.friend-item:hover {
+    background-color: #D9B99B;
+}
+
+.friend-item p {
+    margin: 0;
+    color: #4A6572;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.friend-item strong {
+    color: #B84A62;
+    font-size: 15px;
+}
