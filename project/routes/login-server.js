@@ -2,7 +2,6 @@ const express = require("express");
 const sql = require("../config/db");
 const router = express.Router(); 
 
-
 router.post("/signup", (req, res) => {
     const {
         username,
@@ -74,16 +73,13 @@ router.post("/login", (req, res) => {
             });
         }
 
+        req.session.userId = user.id;
+        req.session.username = user.username;
+
+
         res.json({
             success: true,
-            message: "Login successful!",
-            user: {
-                id: user.id,
-                username: user.username,
-                firstName: user.first_name,
-                lastName: user.last_name,
-                email: user.email
-            }
+            message: "Login successful!"
         });
 
     })
@@ -94,6 +90,68 @@ router.post("/login", (req, res) => {
         res.status(500).json({
             success: false,
             message: "Login failed"
+        });
+
+    });
+});
+
+router.get("/current-user", (req, res) => {
+
+    if (!req.session.userId) {
+
+        return res.json({
+            loggedIn: false
+        });
+    }
+
+    sql`
+        SELECT id, username, first_name, last_name, email
+        FROM users
+        WHERE id = ${req.session.userId}
+    `
+    .then(result => {
+
+        if (result.length === 0) {
+
+            return res.json({
+                loggedIn: false
+            });
+        }
+
+        res.json({
+            loggedIn: true,
+            user: result[0]
+        });
+
+    })
+    .catch(error => {
+
+        console.error(error);
+
+        res.status(500).json({
+            loggedIn: false
+        });
+
+    });
+});
+
+router.post("/logout", (req, res) => {
+
+    req.session.destroy(error => {
+
+        if (error) {
+
+            return res.status(500).json({
+                success: false,
+                message: "Could not log out"
+            });
+        }
+
+        res.clearCookie("connect.sid");
+
+        res.json({
+            success: true,
+            message: "Logged out"
         });
 
     });

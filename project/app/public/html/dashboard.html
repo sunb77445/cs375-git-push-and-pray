@@ -21,9 +21,61 @@
 
         <h1>Travel Planner</h1>
 
+
         <div class="header-buttons">
+
+            <button id="friendButton">👥</button>
+
+            <div id="friendDropdown" class="friend-dropdown">
+
+                <h3>Friends</h3>
+
+                <div id="friendsList">
+                    <p>Loading friends...</p>
+                </div>
+
+                <hr>
+
+                <h3>Add Friend</h3>
+
+                <input
+                    type="text"
+                    id="friendUsername"
+                    placeholder="Enter Username"
+                >
+
+                <button id="searchFriendButton">
+                    Search
+                </button>
+
+                <div id="friendResult"></div>
+
+            </div>
+
             <button id="notificationButton">🔔</button>
-            <button id="userButton">👤</button>
+
+            <div id="notificationDropdown" class="notification-dropdown">
+
+                <h3>Notifications</h3>
+
+                <div id="notificationsList">
+                    <p>No notifications.</p>
+                </div>
+
+            </div>
+            
+            <div class="user-menu">
+                <button id="userButton">👤</button>
+
+                <div id="userDropdown" class="user-dropdown">
+                    <p><strong>Username:</strong> <span id="username"></span></p>
+                    <p><strong>First Name:</strong> <span id="firstName"></span></p>
+                    <p><strong>Last Name:</strong> <span id="lastName"></span></p>
+                    <p><strong>Email:</strong> <span id="email"></span></p>
+
+                    <button id="logoutButton">Logout</button>
+                </div>
+            </div>
         </div>
 
     </header>
@@ -53,20 +105,16 @@
 
     </main>
 
-    <script>
-        document.getElementById("userButton").addEventListener("click", function() {
-            window.location.href = "login.html";
-        });
+    <script src="/js/user.js"></script>
+    <script src="/js/friends.js"></script>
+    <script src="/js/notifications.js"></script>
+    <script src="/js/dashboard.js"></script>
 
-        document.getElementById("createPlanButton").addEventListener("click", function() {
-            window.location.href = "create.html";
-        });
-
-
+    <!--
         // TO DO: add fetch call/api endpoint to database for dynamically rendering saved trips
         // server should validate user and then return trips saved in db correlating to that user_id
         // use response to build front end
-    </script>
+    -->
 
 </body>
 
