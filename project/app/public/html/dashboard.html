@@ -326,9 +326,9 @@
                             );
 
                             const result = await response.json();
-
-                            await loadNotifications();
-                        });
+                            const notificationItem = this.closest(".notification-item");
+                            notificationItem.innerHTML = `<p>${result.message || "You accepted the friend request."}</p>`;
+                        });                      
                     });
 
                 document
@@ -348,7 +348,8 @@
 
                             const result = await response.json();
 
-                            await loadNotifications();
+                            const notificationItem = this.closest(".notification-item");
+                            notificationItem.innerHTML = `<p>${result.message || "You declined the friend request."}</p>`;
                         });
                     });
 
