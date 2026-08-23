@@ -17,12 +17,10 @@ app.use(express.static(path.join(__dirname, 'app','public')));
 app.use(express.static(path.join(__dirname, 'app','public','html')));
 app.use(express.json());
 
-
 app.use(session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || 'development_fallback_secret_key',
     resave: false,
     saveUninitialized: false,
-
     cookie: {
         httpOnly: true,
         secure: false,
@@ -39,5 +37,4 @@ app.use('/', friendRouter);
 
 app.listen(port, hostname, () => {
     console.log(`http://${hostname}:${port}/`);
-})
-
+});
