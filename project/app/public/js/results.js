@@ -101,7 +101,7 @@ tabs.forEach(tab => {
         }
 
     });
-
+});
 
 // Save the trip to the database
 const saveTripButton = document.getElementById("saveTripButton");
@@ -130,8 +130,7 @@ saveTripButton.addEventListener("click", async function() {
         alert(data.message || "Could not save trip.");
     }
 });
-
-});
+ls
 
 
 
