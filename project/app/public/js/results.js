@@ -130,7 +130,7 @@ saveTripButton.addEventListener("click", async function() {
         alert(data.message || "Could not save trip.");
     }
 });
-ls
+
 
 
 
