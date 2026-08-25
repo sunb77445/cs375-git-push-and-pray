@@ -76,8 +76,6 @@ input[type="range"]{
     margin: 0;
 }
 
-
-
 .results-page {
   display: none;
   padding: 20px;
@@ -161,6 +159,54 @@ input[type="range"]{
     font-weight: 600;
     cursor: pointer;
 }
+#back {
+    width: 20%;
+    padding: 10px;
+
+    border: none;
+    border-radius: 6px;
+
+    background-color: #B84A62;
+    color: #F6F1E9;
+
+    font-family: 'Comfortaa', sans-serif;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+#propose-vote-button {
+    width: 40%;
+    padding: 10px;
+
+    border: none;
+    border-radius: 6px;
+
+    background-color: #B84A62;
+    color: #F6F1E9;
+
+    font-family: 'Comfortaa', sans-serif;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+#open-add {
+    width: 40%;
+    padding: 10px;
+
+    border: none;
+    border-radius: 6px;
+
+    background-color: #B84A62;
+    color: #F6F1E9;
+
+    font-family: 'Comfortaa', sans-serif;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
 
 
 
