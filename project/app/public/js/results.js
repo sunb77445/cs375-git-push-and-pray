@@ -8,7 +8,7 @@ let message = document.getElementById("message");
 const pages = Array.from(document.getElementsByClassName('results-page'));
 const tabs = Array.from(document.getElementsByClassName('tab-button'));
 
-let hotelSelection = document.getElementById("selected-hotel");
+let hotelSelectionElement = document.getElementById("selected-hotel");
 let flightSelection = document.getElementById("selected-flight");
 let foodSelection = document.getElementById("selected-restaurant");
 
@@ -80,10 +80,9 @@ async function getFood(){
 
 function getHotelSelection(list){
     let selectedHotel = document.getElementsByClassName("selected")[0].parentElement;
-     list.push(hotelData.properties[selectedHotel.id]);
+    list.push(hotelData.properties[selectedHotel.id]);
 
-
-     return hotelData.properties[selectedHotel.id];
+     return list;
 }
 
 async function saveTrip(userId){
@@ -130,8 +129,8 @@ async function saveTrip(userId){
                 },
                 body: JSON.stringify({
                     tripId: tripId,
-                    hotel: getHotelSelection().name,
-                    price: getHotelSelection().rate_per_night.extracted_lowest, 
+                    hotel: getHotelSelection([])[0].name,
+                    price: getHotelSelection([])[0].rate_per_night.extracted_lowest, 
                     check_in: fromDate,
                     check_out: toDate,
                     guests: numTravelers 
@@ -178,12 +177,12 @@ tabs.forEach(tab => {
         if(page.id == "selected-results"){
              message.textContent = "Here's what you've selected!";
 
-             let hotelSelection = getHotelSelection();
-             formatHotel([], hotelSelection);
+             let hotelSelection = getHotelSelection([]);
+             formatHotel(hotelSelection, hotelSelectionElement);
 
-             let hotelCost = hotelSelection.total_rate.extracted_lowest;
-             let total = hotelCost;
-             total.textContent = `Total Cost: ${total}`;
+             let hotelCost = hotelSelection[0].total_rate.extracted_lowest;
+             let totalCost = hotelCost;
+             total.textContent = `Total Cost: $${totalCost}`;
              alloc.textContent = `You've used ${hotelCost / totalBudget}% of your budget!`
 
         } else {
@@ -210,7 +209,7 @@ save.addEventListener("click", async () => {
 
             // Save all info to db
             saveTrip(userId);
-            
+            window.location.href = '/html/dashboard.html';
 
         }
     }).catch((error) => {

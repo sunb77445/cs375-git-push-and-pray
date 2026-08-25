@@ -115,3 +115,132 @@ input[type="range"]{
     background-color: white;
     align-items: center;
 }
+
+.friend-search-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #4A6572;
+    border-radius: 6px;
+    font-family: 'Comfortaa', sans-serif;
+    background-color: white;
+    color: #2C3A47;
+}
+
+.friend-search-button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    background-color: #B84A62;
+    color: #F6F1E9;
+    font-family: 'Comfortaa', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.friend-search-button:hover {
+    background-color: #2C3A47;
+}
+
+.friend-search-result {
+    margin-top: 15px;
+    color: #4A6572;
+    font-size: 14px;
+}
+
+.friend-search-result button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    background-color: #2ecc71;
+    color: #F6F1E9;
+    font-family: 'Comfortaa', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+
+
+.trip-member-dialog {
+    width: 280px;
+    padding: 20px;
+
+    background-color: #F6F1E9;
+    border: 2px solid #4A6572;
+    border-radius: 10px;
+
+    color: #2C3A47;
+}
+
+.trip-member-dialog input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+
+    border: 1px solid #4A6572;
+    border-radius: 6px;
+
+    font-family: 'Comfortaa', sans-serif;
+    background-color: white;
+    color: #2C3A47;
+}
+
+.trip-member-dialog #searchFriendButton {
+    width: 100%;
+    padding: 10px;
+
+    border: none;
+    border-radius: 6px;
+
+    background-color: #B84A62;
+    color: #F6F1E9;
+
+    font-family: 'Comfortaa', sans-serif;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.trip-member-dialog #searchFriendButton:hover {
+    background-color: #2C3A47;
+}
+
+#tripMemberResult {
+    margin-top: 15px;
+    color: #4A6572;
+    font-size: 14px;
+}
+
+#tripMemberResult button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+
+    border: none;
+    border-radius: 6px;
+
+    background-color: #2ecc71;
+    color: #F6F1E9;
+
+    font-family: 'Comfortaa', sans-serif;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+#exit {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    border: none;
+    background: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.trip-member-dialog {
+    position: relative;
+}
