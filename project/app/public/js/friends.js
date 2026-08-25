@@ -114,3 +114,4 @@ document.getElementById("searchFriendButton").addEventListener("click", async fu
             "<p>Something went wrong.</p>";
     }
 });
+

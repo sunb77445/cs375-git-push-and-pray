@@ -5,6 +5,7 @@ setInterval(loadNotifications, 5000);
 
 let plans = document.getElementById("travelPlans");
 
+
 async function loadTrips(){
     let response = await fetch('/trips');
     let body = await response.json();
@@ -19,10 +20,11 @@ async function loadTrips(){
         return;
     }
 
-    trips.forEach(trip => {
+    trips.forEach(async trip => {
         let card = document.createElement("div");
         let h3 = document.createElement("h3");
         let p = document.createElement("p");
+        let p2 = document.createElement("p");
 
         card.classList.add("plan-placeholder");
         h3.textContent = trip.name;
@@ -30,6 +32,17 @@ async function loadTrips(){
 
         card.append(h3);
         card.append(p);
+
+
+        let response = await fetch("/current-user");
+        let data = await response.json();
+        console.log(data);
+
+        if(trip.user_id != data.user.id){
+            p2.textContent = `Shared With You`;
+            card.append(p2);
+        }
+
         plans.append(card);
 
         card.addEventListener("click", () => {
