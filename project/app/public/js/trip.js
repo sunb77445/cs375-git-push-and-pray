@@ -48,7 +48,7 @@ fetch(`/trips/${tripId}/members`).then(response => {
 
     members.forEach(member => {
         let li = document.createElement("li");
-        li.textContent = `${member.first_name} ${member.last_name} (${member.username})`;
+        li.textContent = `👤 ${member.first_name} ${member.last_name} (${member.username})`;
         membersList.append(li);
     });
    

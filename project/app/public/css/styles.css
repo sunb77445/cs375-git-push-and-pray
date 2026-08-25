@@ -1,13 +1,61 @@
 @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap');
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Comfortaa', sans-serif;
     max-width: 1000px;
     margin: 40px auto;
     padding: 20px;
     background: #f6f1e9;
     color: #b84a62;
     
+}
+
+button {
+    padding: 12px 22px;
+
+    border: none;
+    border-radius: 8px;
+
+    background-color: #B84A62;
+    color: #F6F1E9;
+
+    font-family: 'Comfortaa', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+button#next-button:disabled {
+  background-color: #B84A62 !important;
+   color: #F6F1E9 !important;
+  cursor: not-allowed; 
+  opacity: 0.4 !important;
+}
+
+.step-container.slide-in-box {
+  border: 2px solid #B84A62;
+    border-radius: 15px;
+    justify-content: center;
+    align-items: center;
+    margin: 30px; 
+    padding: 20px; 
+}
+
+.step-container.slide-in-box.active { 
+  animation: slideIn 0.5s ease-out forwards; 
+}
+
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%); 
+    opacity: 0;                   
+  }
+  to {
+    transform: translateX(0);     
+    opacity: 1;                   
+  }
 }
 
 
@@ -57,6 +105,15 @@ label {
 
 input[type="range"]{
     width: 350px;
+}
+
+.step-container{
+    border: 2px solid #B84A62;
+    border-radius: 15px;
+    justify-content: center;
+    align-items: center;
+    margin: 30px; 
+    padding: 20px; 
 }
 
 .travel-nav {

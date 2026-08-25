@@ -1,24 +1,67 @@
 
-// let button1 = document.getElementById("button1").disabled = true;
-// button1 = document.getElementById("button1").disabled = false;
+let next = document.getElementById("next-button");
+let step2 = document.getElementById("step2");
+let inputs = Array.from(document.getElementsByClassName("required"));
 
-let button2 = document.getElementById("button2");
-// button2 = document.getElementById("button2").disabled = false;
-
+let submit = document.getElementById("submit");
 let loadingScreen = document.querySelector(".loading");
 let sliders = document.querySelectorAll(".slider");
 
 
-// budget preferences
-sliders.forEach(slider => {
-   let sliderValue = document.getElementById(`${slider.id}-value`);
 
-   slider.addEventListener("input", (event) => {
-      sliderValue.textContent = `${event.target.value}%`;
-   })
-   
+// Display Step 2
+next.addEventListener("click", () => {
+    step2.classList.add('slide-in');
+    step2.classList.add('active');
 });
 
+
+// Ensure all fields are filled
+function checkInputs(){
+   let complete = true;
+
+   inputs.forEach(input => {
+      if (input.value.trim() === ''){
+            complete = false;
+         }
+   });
+
+   next.disabled = !complete;
+}
+
+inputs.forEach(input => {
+   input.addEventListener("input", checkInputs);
+});
+
+checkInputs();
+
+
+// budget preferences
+sliders.forEach(slider => {
+    slider.addEventListener('input', updateSliders);
+});
+
+// Ensure allocations dont exceed given budget
+function updateSliders(event){
+   let total = 0;
+
+   sliders.forEach(slider => 
+      total += Number(slider.value)
+   );
+
+   if(total > 100){
+      let remainder = total - 100;
+      event.target.value = Number(event.target.value) - remainder;
+   }
+
+    sliders.forEach(slider => {
+      let sliderValue = document.getElementById(`${slider.id}-value`);
+      let budget = Number(document.getElementById("budget").value);
+
+      sliderValue.textContent = `${slider.value}% - $${((Number(slider.value) / 100) * budget).toFixed(2)}`;
+   });
+
+}
 
 
 async function onSubmit(){
@@ -41,7 +84,6 @@ async function onSubmit(){
    let foodBudget = totalBudget * (document.getElementById("food").value / 100);
    let hotelBudget = totalBudget * (document.getElementById("accomodations").value / 100);
    let flightBudget = totalBudget * (document.getElementById("flights").value / 100);
-   let attractionsBudget = totalBudget * (document.getElementById("activities").value / 100);
 
   console.log(`Going To: ${destCity}, ${destState}, ${destCountry}`);
    console.log(`From: ${fromCity}, ${fromState}`);
@@ -50,7 +92,6 @@ async function onSubmit(){
    console.log(`Food Budget: ${foodBudget}`);
    console.log(`Hotel Budget: ${hotelBudget} `);
    console.log(`Flight Budget: ${flightBudget}`);
-   console.log(`Attractions Budget: ${attractionsBudget}`);
 
    const params = new URLSearchParams({
       destCity: destCity,
@@ -65,7 +106,6 @@ async function onSubmit(){
       foodBudget: foodBudget,
       hotelBudget: hotelBudget,
       flightBudget: flightBudget,
-      attractionsBudget: attractionsBudget,
 
    });
 
@@ -74,7 +114,7 @@ async function onSubmit(){
 }
 
 // Event Listeners
-button2.addEventListener("click", onSubmit);
+submit.addEventListener("click", onSubmit);
 
 
 

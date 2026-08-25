@@ -39,7 +39,7 @@ async function loadTrips(){
         console.log(data);
 
         if(trip.user_id != data.user.id){
-            p2.textContent = `Shared With You`;
+            p2.textContent = `👤 Shared With You`;
             card.append(p2);
         }
 
