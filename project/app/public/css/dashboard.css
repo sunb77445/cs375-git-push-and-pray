@@ -124,6 +124,14 @@ main {
     color: #4A6572;
 }
 
+.plan-placeholder {
+    cursor: pointer;
+}
+
+.plan-placeholder:hover {
+    transform: translateY(-2px);
+}
+
 .user-menu {
     position: relative;
 }
