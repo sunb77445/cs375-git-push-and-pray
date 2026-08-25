@@ -1,5 +1,5 @@
 const urlParams = new URLSearchParams(window.location.search);
-const tripId = urlParams.get('id');
+let tripId = urlParams.get('id');
 let dest = document.getElementById("dest");
 let dates = document.getElementById("dates");
 let hotel = document.getElementById("hotel");

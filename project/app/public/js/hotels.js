@@ -232,13 +232,10 @@ function selectHotel(container) {
             const btn = event.target;
             const isSelected = btn.classList.contains("selected");
 
-            // deselect all other all buttons
-            container.querySelectorAll(".select-hotel").forEach(otherBtn => {
-                otherBtn.classList.remove("selected");
-                otherBtn.textContent = "Select hotel";
-            });
-
-            if (!isSelected) {
+            if (isSelected) {
+                btn.classList.remove("selected");
+                btn.textContent = "Select hotel";
+            } else {
                 btn.classList.add("selected");
                 btn.textContent = "Selected";
             }
