@@ -80,7 +80,7 @@ router.post("/api/hotels/session-save", (req, res) => {
 const sql = require("../config/db");
 
 router.post("/api/hotels/save", async (req, res) => {
-    const { tripId, hotel } = req.body;
+    const { tripId, hotel, price, check_in, check_out, guests } = req.body;
 
     if (!tripId || !hotel) {
         return res.status(400).json({
@@ -92,7 +92,6 @@ router.post("/api/hotels/save", async (req, res) => {
     try {
         await sql`
             INSERT INTO hotels (
-                id,
                 trip_id, 
                 name, 
                 price,
@@ -101,14 +100,13 @@ router.post("/api/hotels/save", async (req, res) => {
                 guests
         
             ) VALUES (
-                ${hotel.id}
                 ${tripId}, 
-                ${hotel.name}, 
-                ${hotel.price}, 
-                ${req.params.check_in_date.value},
-                ${req.params.check_out_date.value}, 
-                ${req.params.adults.value}
-                      
+                ${hotel}, 
+                ${price}, 
+                ${check_in},
+                ${check_out}, 
+                ${guests}
+                    
             )
         `;
 
