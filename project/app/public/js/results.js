@@ -121,25 +121,26 @@ async function saveTrip(userId){
    
 
     // Save hotel to db
-    fetch("/api/hotels/save",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    tripId: tripId,
-                    hotel: getHotelSelection([])[0].name,
-                    price: getHotelSelection([])[0].rate_per_night.extracted_lowest, 
-                    check_in: fromDate,
-                    check_out: toDate,
-                    guests: numTravelers 
-                }),
+    try {
+        await fetch("/api/hotels/save",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        tripId: tripId,
+                        hotel: getHotelSelection([])[0].name,
+                        price: getHotelSelection([])[0].rate_per_night.extracted_lowest,
+                        check_in: fromDate,
+                        check_out: toDate,
+                        guests: numTravelers
+                    }),
 
-            }).catch (error => {
-                console.log("Error saving hotel:", error.message);
-                return;
-            });
+                });
+    } catch (error) {
+        console.log("Error saving hotel:", error.message);
+    }
 
 }
 
@@ -198,23 +199,23 @@ tabs.forEach(tab => {
 save.addEventListener("click", async () => {
 
     // get user id
-    fetch("/current-user").then((response) => {
-        return response.json();
+    try {
+        const response = await fetch("/current-user");
+        const data = await response.json();
 
-    }).then((data) => {
         if(data.loggedIn == false){
             console.log("Not logged in");
         } else {
             userId = data.user.id;
 
             // Save all info to db
-            saveTrip(userId);
+            await saveTrip(userId);
             window.location.href = '/html/dashboard.html';
 
         }
-    }).catch((error) => {
+    } catch (error) {
         console.log(error);
-    });
+    }
 
 
 
