@@ -290,3 +290,62 @@ input[type="range"]{
 .trip-member-dialog {
     position: relative;
 }
+
+.vote-dialog {
+    width: 320px;
+    padding: 20px;
+
+    background-color: #F6F1E9;
+    border: 2px solid #4A6572;
+    border-radius: 10px;
+    color: #2C3A47;
+    position: relative;
+}
+
+#vote-exit {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    border: none;
+    background: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+#vote-status {
+    color: #4A6572;
+    font-size: 14px;
+}
+
+.vote-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 10px;
+    margin-bottom: 8px;
+
+    background-color: white;
+    border: 1px solid #D9B99B;
+    border-radius: 8px;
+
+    cursor: pointer;
+}
+
+.vote-option:hover {
+    background-color: #D9B99B;
+}
+
+.vote-option.my-vote {
+    border-color: #B84A62;
+    background-color: #B84A62;
+    color: #F6F1E9;
+}
+
+.vote-hotel-name {
+    font-weight: 600;
+}
+
+.vote-count {
+    font-size: 13px;
+}
