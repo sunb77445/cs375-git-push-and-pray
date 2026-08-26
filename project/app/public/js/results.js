@@ -79,10 +79,14 @@ async function getFood(){
 }
 
 function getHotelSelection(list){
-    let selectedHotel = document.getElementsByClassName("selected")[0].parentElement;
-    list.push(hotelData.properties[selectedHotel.id]);
+    const selectedButtons = document.getElementsByClassName("selected");
 
-     return list;
+    Array.from(selectedButtons).forEach(btn => {
+        const hotelInfo = btn.parentElement;
+        list.push(hotelData.properties[hotelInfo.id]);
+    });
+
+    return list;
 }
 
 async function saveTrip(userId){
@@ -121,25 +125,30 @@ async function saveTrip(userId){
    
 
     // Save hotel to db
-    fetch("/api/hotels/save",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    tripId: tripId,
-                    hotel: getHotelSelection([])[0].name,
-                    price: getHotelSelection([])[0].rate_per_night.extracted_lowest, 
-                    check_in: fromDate,
-                    check_out: toDate,
-                    guests: numTravelers 
-                }),
+    try {
+        const selectedHotels = getHotelSelection([]);
 
-            }).catch (error => {
-                console.log("Error saving hotel:", error.message);
-                return;
-            });
+        for (const selectedHotel of selectedHotels) {
+            await fetch("/api/hotels/save",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            tripId: tripId,
+                            hotel: selectedHotel.name,
+                            price: selectedHotel.rate_per_night.extracted_lowest,
+                            check_in: fromDate,
+                            check_out: toDate,
+                            guests: numTravelers
+                        }),
+
+                    });
+        }
+    } catch (error) {
+        console.log("Error saving hotel:", error.message);
+    }
 
 }
 
@@ -178,9 +187,15 @@ tabs.forEach(tab => {
              message.textContent = "Here's what you've selected!";
 
              let hotelSelection = getHotelSelection([]);
+             hotelSelectionElement.replaceChildren();
              formatHotel(hotelSelection, hotelSelectionElement);
 
-             let hotelCost = hotelSelection[0].total_rate.extracted_lowest;
+             let hotelCost = 0;
+             for (const hotel of hotelSelection) {
+                 if (hotel.total_rate && hotel.total_rate.extracted_lowest) {
+                     hotelCost += hotel.total_rate.extracted_lowest;
+                 }
+             }
              let totalCost = hotelCost;
              total.textContent = `Total Cost: $${totalCost}`;
              alloc.textContent = `You've used ${hotelCost / totalBudget}% of your budget!`
@@ -198,23 +213,23 @@ tabs.forEach(tab => {
 save.addEventListener("click", async () => {
 
     // get user id
-    fetch("/current-user").then((response) => {
-        return response.json();
+    try {
+        const response = await fetch("/current-user");
+        const data = await response.json();
 
-    }).then((data) => {
         if(data.loggedIn == false){
             console.log("Not logged in");
         } else {
             userId = data.user.id;
 
             // Save all info to db
-            saveTrip(userId);
+            await saveTrip(userId);
             window.location.href = '/html/dashboard.html';
 
         }
-    }).catch((error) => {
+    } catch (error) {
         console.log(error);
-    });
+    }
 
 
 

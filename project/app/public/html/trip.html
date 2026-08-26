@@ -11,21 +11,24 @@
         <img src="/images/paris.jpg" alt="Image of Paris skyline" class="full-width-img">
 
         <div class="banner-container">
-            <form action="dashboard.html"><button type="submit">Back to Dashboard</button></form>
+            <form action="dashboard.html">
+                <button class="pointed-left" type="submit" id ="back"> Back to Dashboard</button>
+            </form>
             <h1 id="dest"> Trip to City, Country</h1>
             <p id="dates">From MM/DD/YYY to MM/DD/YYY</p>
             <p id="creator">Created By </p>
 
-            <h2 id="hotel">Hotel </h2>
+            <h2>Hotel</h2>
+            <div id="hotel-list" class="saved-hotel-list"></div>
             <h2 id="flight">Flight </h2>
             <h2 id="food">Restaurants</h2>
 
 
-            <h4> Trip Members</h1>
+            <h4> Trip Members</h4>
             <ul id="member-list"> </ul>
-            <button id="open-add"> Add User </button>
 
-            <button>Propose Vote</button>
+            <button id="open-add"> Add User </button>
+            <button id = "propose-vote-button">Propose Vote</button>
 
             <dialog id="dialog">
                 <h2>Add a Friend to Your Trip!</h2>
@@ -37,10 +40,18 @@
                 <button id="exit">&times;</button>
             </dialog>
 
+            <dialog id="vote-dialog" class="vote-dialog">
+                <button id="vote-exit">[X]</button>
+                <h2>Vote on a Hotel</h2>
+                <p id="vote-status"></p>
+                <div id="vote-options"></div>
+            </dialog>
+
         </div>
 
         <script src="/js/hotels.js"></script>
         <script src="/js/trip.js"></script>
+        <script src="/js/vote.js"></script>
     </body>
 
 </html>

@@ -1,8 +1,8 @@
 const urlParams = new URLSearchParams(window.location.search);
-const tripId = urlParams.get('id');
+let tripId = urlParams.get('id');
 let dest = document.getElementById("dest");
 let dates = document.getElementById("dates");
-let hotel = document.getElementById("hotel");
+let hotelList = document.getElementById("hotel-list");
 
 let dialog = document.getElementById("dialog");
 let addUser = document.getElementById("open-add");
@@ -21,14 +21,38 @@ fetch(`/trips${tripId}`).then(response => {
 }).then(data => {
     dest.textContent = `Trip to ${data.details[0].dest}`;
     dates.textContent = `Planned Dates: ${new Date(data.details[0].from_date).toLocaleDateString()} to ${new Date(data.details[0].to_date).toLocaleDateString()}`;
-    // creator.textContent = `Created By ${}`;
-    formatHotel(data.hotel, hotel);
+    renderSavedHotels(data.hotel, hotelList);
 
     console.log(data);
 
 }).catch(error => {
     console.log(error);
 });
+
+
+// Displays the trip's saved hotel(s) as clean cards
+function renderSavedHotels(hotels, container) {
+    container.innerHTML = "";
+
+    if (!hotels || hotels.length === 0) {
+        container.innerHTML = "<p class=\"empty-note\">No hotel selected yet.</p>";
+        return;
+    }
+
+    hotels.forEach(hotel => {
+        const card = document.createElement("div");
+        card.className = "saved-hotel-card";
+
+        card.innerHTML = `
+            <h3 class="saved-hotel-name">${hotel.name}</h3>
+            <p class="saved-hotel-price">$${hotel.price} / night</p>
+            <!---<p class = "saved-total-price"></p>--->
+            <p class="saved-hotel-guests">${hotel.guests} guest${hotel.guests == 1 ? "" : "s"}</p>
+        `;
+
+        container.appendChild(card);
+    });
+}
 
 
 
