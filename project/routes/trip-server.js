@@ -96,8 +96,7 @@ router.get('/trips:trip_id', async (req, res) => {
 
 // add member to trip
 router.post('/trips/:trip_id/members', async (req, res) => {
-
-      try {
+    try {
         if (!req.session.userId) {
             return res.status(401).json({
                 success: false,
@@ -115,20 +114,72 @@ router.post('/trips/:trip_id/members', async (req, res) => {
             });
         }
 
-        // CHECK IF ALR ADDED
+        const trip = await sql`
+            SELECT name, dest
+            FROM trips
+            WHERE trip_id = ${tripId}
+        `;
 
-       const member =  await sql`
+        if (trip.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Trip not found"
+            });
+        }
+
+        const creator = await sql`
+            SELECT username
+            FROM users
+            WHERE id = ${req.session.userId}
+        `;
+
+        const existingMember = await sql`
+            SELECT *
+            FROM trip_members
+            WHERE trip_id = ${tripId}
+            AND user_id = ${userId}
+        `;
+
+        if (existingMember.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: "User is already a member of this trip"
+            });
+        }
+
+        const member = await sql`
             INSERT INTO trip_members (trip_id, user_id)
             VALUES (${tripId}, ${userId})
             RETURNING *
         `;
 
-        res.json({member});
+        await sql`
+            INSERT INTO notifications
+            (
+                user_id,
+                message,
+                type
+            )
+            VALUES (
+                ${userId},
+                ${creator[0].username} || ' added you to their trip to ' || ${trip[0].dest},
+                'trip_invitation'
+            )
+        `;
 
-    } catch(error) {
+        res.json({
+            success: true,
+            member
+        });
+
+    } catch (error) {
         console.log(error);
-        res.sendStatus(500);
-    };
+
+        res.status(500).json({
+            success: false,
+            message: "Could not add user to trip"
+        });
+    }
 
 });
 
@@ -139,15 +190,26 @@ router.get('/trips/:trip_id/members', async (req, res) => {
     let tripId = Number(req.params.trip_id);
 
     try {
-        const members = await
-    sql`
-            SELECT first_name, last_name, username
-            FROM users
-            WHERE id IN (
-                SELECT user_id
-                FROM trip_members
-                WHERE trip_id = ${tripId}
-            )
+        const members = await sql`
+            SELECT 
+                u.first_name,
+                u.last_name,
+                u.username,
+                CASE
+                    WHEN u.id = t.user_id THEN true
+                    ELSE false
+                END AS is_creator
+            FROM users u
+            JOIN trips t
+                ON t.trip_id = ${tripId}
+            WHERE 
+                u.id = t.user_id
+                OR u.id IN (
+                    SELECT user_id
+                    FROM trip_members
+                    WHERE trip_id = ${tripId}
+                )
+            ORDER BY is_creator DESC, u.username
         `;
 
     res.json({members});
