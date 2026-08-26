@@ -176,12 +176,23 @@ async function loadNotifications() {
     }
 }
 
-document.getElementById("notificationButton")
-    .addEventListener("click", async function() {
+document.getElementById("notificationButton").addEventListener("click", async function() {
 
-        document
-            .getElementById("notificationDropdown")
-            .classList.toggle("show");
+        const notificationDropdown =
+            document.getElementById("notificationDropdown");
 
-        await loadNotifications();
-    });
+        const friendDropdown =
+            document.getElementById("friendDropdown");
+
+        const userDropdown =
+            document.getElementById("userDropdown");
+
+        friendDropdown.classList.remove("show");
+        userDropdown.classList.remove("show");
+
+        notificationDropdown.classList.toggle("show");
+
+        if (notificationDropdown.classList.contains("show")) {
+            await loadNotifications();
+        }
+});

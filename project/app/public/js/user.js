@@ -24,7 +24,15 @@ async function loadCurrentUser() {
 }
 
 document.getElementById("userButton").addEventListener("click", function() {
-    document.getElementById("userDropdown").classList.toggle("show");
+
+    const userDropdown = document.getElementById("userDropdown");
+    const friendDropdown = document.getElementById("friendDropdown");
+    const notificationDropdown = document.getElementById("notificationDropdown");
+
+    friendDropdown.classList.remove("show");
+    notificationDropdown.classList.remove("show");
+
+    userDropdown.classList.toggle("show");
 });
 
 document.getElementById("logoutButton").addEventListener("click", async function() {

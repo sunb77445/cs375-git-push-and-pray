@@ -43,9 +43,19 @@ async function loadFriends() {
 
 
 document.getElementById("friendButton").addEventListener("click", async function() {
-    document.getElementById("friendDropdown").classList.toggle("show");
 
-    await loadFriends();
+    const friendDropdown = document.getElementById("friendDropdown");
+    const userDropdown = document.getElementById("userDropdown");
+    const notificationDropdown = document.getElementById("notificationDropdown");
+
+    userDropdown.classList.remove("show");
+    notificationDropdown.classList.remove("show");
+
+    friendDropdown.classList.toggle("show");
+
+    if (friendDropdown.classList.contains("show")) {
+        await loadFriends();
+    }
 });
 
 
