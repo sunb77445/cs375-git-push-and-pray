@@ -82,7 +82,15 @@ router.get('/trips:trip_id', async (req, res) => {
             WHERE trip_id = ${id}
         `;
 
-    res.json({details, hotel});
+    const restaurant = await
+
+    sql`
+            SELECT id AS restaurant_id, name, address, website, distance
+            FROM restaurants
+            WHERE trip_id = ${id}
+        `;
+
+    res.json({details, hotel, restaurant});
 });
 
 

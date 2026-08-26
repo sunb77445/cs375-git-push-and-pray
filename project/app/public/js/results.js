@@ -37,6 +37,7 @@ let attractionsBudget = params.get("attractionsBudget");
 let hotelData, flightData, foodData;
 
 let userId;
+let tripId;
 
 async function getHotels(){
     let hotelResponse = await fetch(`/api/hotels?q=hotels in ${destCity} ${destCountry}&check_in_date=${fromDate}&check_out_date=${toDate}&adults=${numTravelers}&max_price=${hotelBudget}`);
@@ -148,6 +149,27 @@ async function saveTrip(userId){
         }
     } catch (error) {
         console.log("Error saving hotel:", error.message);
+    }
+
+    // Save selected restaurants to the newly created trip
+    try {
+        for (const restaurant of window.selectedRestaurants) {
+            await fetch("/save-restaurant", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    tripId: tripId,
+                    name: restaurant.name,
+                    address: restaurant.address,
+                    website: restaurant.website,
+                    distance: restaurant.distance
+                })
+            });
+        }
+    } catch (error) {
+        console.log("Error saving restaurant:", error.message);
     }
 
 }

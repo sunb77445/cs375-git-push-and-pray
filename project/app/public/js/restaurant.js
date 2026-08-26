@@ -9,31 +9,11 @@ let result = document.getElementById("result");
 let selectedLat = null;
 let selectedLon = null;
 
-
-// Hardcoded for now. In the future, this can come from localStorage or URL query parameters.
-let currentTripId = 1;
+window.selectedRestaurants = [];
 
 
 function loadAndRenderRestaurants(places, element) {
-    if (!currentTripId) {
-        renderRestaurants(places, element, []);
-        return;
-    }
-
-
-    fetch("/saved-restaurants/" + currentTripId)
-        .then(res => res.json())
-        .then(data => {
-            let savedList = [];
-            if (data.success) {
-                savedList = data.restaurants;
-            }
-            renderRestaurants(places, element, savedList);
-        })
-        .catch(err => {
-            console.error("Error fetching saved restaurants:", err);
-            renderRestaurants(places, element, []);
-        });
+    renderRestaurants(places, element, []);
 }
 
 
@@ -116,47 +96,26 @@ function renderRestaurants(data, element, savedList) {
 
         selectBtn.addEventListener("click", () => {
             if (selectBtn.textContent === "Select") {
-                // SAVE TO SUPABASE
-                fetch("/save-restaurant", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        tripId: currentTripId,
-                        name: restaurantName,
-                        address: fullAddress,
-                        website: websiteUrl,
-                        distance: calculatedMiles
-                    })
-                })
-                .then(res => res.json())
-                .then(response => {
-                    if (response.success) {
-                        savedDatabaseId = response.id;
-                        selectBtn.textContent = "Deselect";
-                        selectBtn.style.backgroundColor = "orange";
-                    } else {
-                        alert(response.message);
-                    }
-                })
-                .catch(err => console.error("Error saving:", err));
+                window.selectedRestaurants.push({
+                    name: restaurantName,
+                    address: fullAddress,
+                    website: websiteUrl,
+                    distance: calculatedMiles
+                });
+
+                selectBtn.textContent = "Deselect";
+                selectBtn.style.backgroundColor = "orange";
 
 
             } else {
-                // REMOVE FROM SUPABASE
-                fetch("/remove-restaurant/" + savedDatabaseId, {
-                    method: "DELETE"
-                })
-                .then(res => res.json())
-                .then(response => {
-                    if (response.success) {
-                        savedDatabaseId = null;
-                        selectBtn.textContent = "Select";
-                        selectBtn.style.backgroundColor = "";
-                    } else {
-                        alert(response.message);
-                    }
-                })
-                .catch(err => console.error("Error removing:", err));
+                window.selectedRestaurants = window.selectedRestaurants.filter(restaurant =>
+                    restaurant.name !== restaurantName ||
+                    restaurant.address !== fullAddress
+                );
+
+                savedDatabaseId = null;
+                selectBtn.textContent = "Select";
+                selectBtn.style.backgroundColor = "";
             }
         });
 
