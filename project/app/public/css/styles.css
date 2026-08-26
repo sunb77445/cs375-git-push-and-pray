@@ -1,13 +1,61 @@
 @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap');
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Comfortaa', sans-serif;
     max-width: 1000px;
     margin: 40px auto;
     padding: 20px;
     background: #f6f1e9;
     color: #b84a62;
     
+}
+
+button {
+    padding: 12px 22px;
+
+    border: none;
+    border-radius: 8px;
+
+    background-color: #B84A62;
+    color: #F6F1E9;
+
+    font-family: 'Comfortaa', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+button#next-button:disabled {
+  background-color: #B84A62 !important;
+   color: #F6F1E9 !important;
+  cursor: not-allowed; 
+  opacity: 0.4 !important;
+}
+
+.step-container.slide-in-box {
+  border: 2px solid #B84A62;
+    border-radius: 15px;
+    justify-content: center;
+    align-items: center;
+    margin: 30px; 
+    padding: 20px; 
+}
+
+.step-container.slide-in-box.active { 
+  animation: slideIn 0.5s ease-out forwards; 
+}
+
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%); 
+    opacity: 0;                   
+  }
+  to {
+    transform: translateX(0);     
+    opacity: 1;                   
+  }
 }
 
 
@@ -59,6 +107,15 @@ input[type="range"]{
     width: 350px;
 }
 
+.step-container{
+    border: 2px solid #B84A62;
+    border-radius: 15px;
+    justify-content: center;
+    align-items: center;
+    margin: 30px; 
+    padding: 20px; 
+}
+
 .travel-nav {
     display: flex;
     justify-content: center;
@@ -75,8 +132,6 @@ input[type="range"]{
     padding: 0;
     margin: 0;
 }
-
-
 
 .results-page {
   display: none;
@@ -114,4 +169,277 @@ input[type="range"]{
     height: 100vh;
     background-color: white;
     align-items: center;
+}
+
+.friend-search-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #4A6572;
+    border-radius: 6px;
+    font-family: 'Comfortaa', sans-serif;
+    background-color: white;
+    color: #2C3A47;
+}
+
+.friend-search-button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    background-color: #B84A62;
+    color: #F6F1E9;
+    font-family: 'Comfortaa', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.friend-search-button:hover {
+    background-color: #2C3A47;
+}
+
+.friend-search-result {
+    margin-top: 15px;
+    color: #4A6572;
+    font-size: 14px;
+}
+
+.friend-search-result button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    background-color: #2ecc71;
+    color: #F6F1E9;
+    font-family: 'Comfortaa', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+}
+#back {
+    width: 20%;
+    padding: 10px;
+
+    border: none;
+    border-radius: 6px;
+
+    background-color: #B84A62;
+    color: #F6F1E9;
+
+    font-family: 'Comfortaa', sans-serif;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+#propose-vote-button {
+    width: 40%;
+    padding: 10px;
+
+    border: none;
+    border-radius: 6px;
+
+    background-color: #B84A62;
+    color: #F6F1E9;
+
+    font-family: 'Comfortaa', sans-serif;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+#open-add {
+    width: 40%;
+    padding: 10px;
+
+    border: none;
+    border-radius: 6px;
+
+    background-color: #B84A62;
+    color: #F6F1E9;
+
+    font-family: 'Comfortaa', sans-serif;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+
+
+
+.trip-member-dialog {
+    width: 280px;
+    padding: 20px;
+
+    background-color: #F6F1E9;
+    border: 2px solid #4A6572;
+    border-radius: 10px;
+
+    color: #2C3A47;
+}
+
+.trip-member-dialog input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+
+    border: 1px solid #4A6572;
+    border-radius: 6px;
+
+    font-family: 'Comfortaa', sans-serif;
+    background-color: white;
+    color: #2C3A47;
+}
+
+.trip-member-dialog #searchFriendButton {
+    width: 100%;
+    padding: 10px;
+
+    border: none;
+    border-radius: 6px;
+
+    background-color: #B84A62;
+    color: #F6F1E9;
+
+    font-family: 'Comfortaa', sans-serif;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.trip-member-dialog #searchFriendButton:hover {
+    background-color: #2C3A47;
+}
+
+#tripMemberResult {
+    margin-top: 15px;
+    color: #4A6572;
+    font-size: 14px;
+}
+
+#tripMemberResult button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+
+    border: none;
+    border-radius: 6px;
+
+    background-color: #2ecc71;
+    color: #F6F1E9;
+
+    font-family: 'Comfortaa', sans-serif;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+#exit {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    border: none;
+    background: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.trip-member-dialog {
+    position: relative;
+}
+
+.vote-dialog {
+    width: 320px;
+    padding: 20px;
+
+    background-color: #F6F1E9;
+    border: 2px solid #4A6572;
+    border-radius: 10px;
+    color: #2C3A47;
+    position: relative;
+}
+
+#vote-exit {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    border: none;
+    background: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+#vote-status {
+    color: #4A6572;
+    font-size: 14px;
+}
+
+.vote-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 10px;
+    margin-bottom: 8px;
+
+    background-color: white;
+    border: 1px solid #D9B99B;
+    border-radius: 8px;
+
+    cursor: pointer;
+}
+
+.vote-option:hover {
+    background-color: #D9B99B;
+}
+
+.vote-option.my-vote {
+    border-color: #B84A62;
+    background-color: #B84A62;
+    color: #F6F1E9;
+}
+
+.vote-hotel-name {
+    font-weight: 600;
+}
+
+.vote-count {
+    font-size: 13px;
+}
+
+.saved-hotel-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.saved-hotel-card {
+    padding: 16px 20px;
+    background-color: white;
+    border: 1px solid #D9B99B;
+    border-radius: 10px;
+    color: #2C3A47;
+}
+
+.saved-hotel-name {
+    margin: 0 0 8px 0;
+    font-family: "Comfortaa", sans-serif;
+    color: #B84A62;
+}
+
+.saved-hotel-price {
+    margin: 0 0 4px 0;
+}
+
+.saved-hotel-dates,
+.saved-hotel-guests {
+    margin: 0 0 4px 0;
+    color: #4A6572;
+    font-size: 14px;
+}
+
+.empty-note {
+    color: #4A6572;
+    font-style: italic;
 }

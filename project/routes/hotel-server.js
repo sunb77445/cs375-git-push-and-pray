@@ -66,5 +66,63 @@ router.get("/api/hotel-autocomplete", async (req, res) => {
     }
 });
 
+
+// Save hotel to session
+/*
+router.post("/api/hotels/session-save", (req, res) => {
+    req.session.selectedHotel = req.body.hotel;
+    res.json({ success: true });
+});
+*/
+
+
+// Save hotel to database
+const sql = require("../config/db");
+
+router.post("/api/hotels/save", async (req, res) => {
+    const { tripId, hotel, price, check_in, check_out, guests } = req.body;
+
+    if (!tripId || !hotel) {
+        return res.status(400).json({
+            success: false,
+            message: res.message || "Missing required fields."
+        });
+    }
+
+    try {
+        await sql`
+            INSERT INTO hotels (
+                trip_id, 
+                name, 
+                price,
+                check_in,
+                check_out,  
+                guests
+        
+            ) VALUES (
+                ${tripId}, 
+                ${hotel}, 
+                ${price}, 
+                ${check_in},
+                ${check_out}, 
+                ${guests}
+                    
+            )
+        `;
+
+        res.json({
+            success: true,
+            message: "Hotel saved to trip successfully!"
+        });
+    } catch (error) {
+        console.error("Error saving hotel:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to save hotel to database.",
+            details: error.message
+        });
+    }
+});
+
 module.exports = router;
 
