@@ -344,3 +344,11 @@ main {
     color: #B84A62;
     font-size: 15px;
 }
+
+.notification-dropdown p,
+.friend-dropdown p,
+.user-dropdown p {
+    color: #2C3A47;
+    opacity: 1;
+}
+
