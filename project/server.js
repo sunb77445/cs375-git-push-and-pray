@@ -51,5 +51,4 @@ app.use('/', friendRouter);
 
 app.listen(port, hostname, () => {
     console.log(`http://${hostname}:${port}/`);
-})
-
+});

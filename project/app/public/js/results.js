@@ -65,7 +65,7 @@ async function getFood(){
     let foodBody = await foodResponse.json();
 
     console.log(foodBody); 
-    renderRestaurants(foodBody.features, foodPage);
+    loadAndRenderRestaurants(foodBody.features, foodPage);
 }
 
 // Load hotels by default
