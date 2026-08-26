@@ -4,8 +4,93 @@ const loading = document.getElementById("loading");
 const error = document.getElementById("error");
 
 
+// Displays selected hotel without selectButton
+function formatHotel(hotelList, element){
+      let i = 0; // adding ids for each hotel for future access to response body
+      hotelList.forEach((hotel) => {
+
+      const hotelElement = document.createElement("div");
+      hotelElement.className = "hotel";
+
+      // card fields with optional checking (show if they exist)
+      // Hotel image
+      const image = hotel.images &&hotel.images.length > 0
+          ? `
+            <img
+              src="${hotel.images[0].thumbnail}"
+              alt="${hotel.name || "Hotel"}"
+            >
+          `
+          : "";
+
+      // Rating
+      const rating =
+        hotel.rating
+          ? `<p class = "rating">Average Rating: ${hotel.rating} / 5</p>`
+          : "";
+
+      // Reviews
+      const reviews =
+        hotel.reviews
+          ? `<p class = "reviews">${hotel.reviews} reviews</p>`
+          : "";
+
+      // Price per night
+      const price =
+        hotel.rate_per_night?.lowest
+          ? `
+            <p class="price">
+              ${hotel.rate_per_night.lowest}
+              per night
+            </p>
+          `
+          : "";
+
+      // Total price
+      const total =
+        hotel.total_rate?.lowest
+          ? `
+            <p class = "total">
+              Total:
+              ${hotel.total_rate.lowest}
+            </p>
+          `
+          : "";
+
+          // Description
+      const description =
+        hotel.description
+          ? `<p class = "description">${hotel.description}</p>`
+          : "";
+
+      hotelElement.innerHTML = `${image}
+
+        <div class="hotel-info" id="${i}">
+
+          <h2>
+            ${hotel.name || "Unnamed Hotel"}
+          </h2>
+          
+          ${rating}
+          ${reviews}
+          ${price}
+          ${total}
+          ${description}
+
+        </div>
+
+        <div class="clear"></div>
+      `;
+
+      element.appendChild(hotelElement);
+      i++;
+    });
+}
+
+
 
 function formatHotels(hotelList, element){
+      let i = 0; // adding ids for each hotel for future access to response body
       hotelList.forEach((hotel) => {
 
       const hotelElement = document.createElement("div");
@@ -67,12 +152,12 @@ function formatHotels(hotelList, element){
 
       hotelElement.innerHTML = `${image}
 
-        <div class="hotel-info">
+        <div class="hotel-info" id="${i}">
 
           <h2>
             ${hotel.name || "Unnamed Hotel"}
           </h2>
-
+          
           ${rating}
           ${reviews}
           ${price}
@@ -86,6 +171,7 @@ function formatHotels(hotelList, element){
       `;
 
       element.appendChild(hotelElement);
+      i++;
     });
 }
 
@@ -146,13 +232,10 @@ function selectHotel(container) {
             const btn = event.target;
             const isSelected = btn.classList.contains("selected");
 
-            // deselect all other all buttons
-            container.querySelectorAll(".select-hotel").forEach(otherBtn => {
-                otherBtn.classList.remove("selected");
-                otherBtn.textContent = "Select hotel";
-            });
-
-            if (!isSelected) {
+            if (isSelected) {
+                btn.classList.remove("selected");
+                btn.textContent = "Select hotel";
+            } else {
                 btn.classList.add("selected");
                 btn.textContent = "Selected";
             }
