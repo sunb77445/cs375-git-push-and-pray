@@ -6,11 +6,11 @@ let hotelList = document.getElementById("hotel-list");
 
 let dialog = document.getElementById("dialog");
 let addUser = document.getElementById("open-add");
-let searchButton = document.getElementById("searchFriendButton");
 let exit = document.getElementById("exit");
-let userToAdd = document.getElementById("friendUsername"); 
 let membersList = document.getElementById("member-list");
 let creator = document.getElementById("creator");
+let friendSelect = document.getElementById("friendSelect");
+let addFriendToTripButton = document.getElementById("addFriendToTripButton");
 const result = document.getElementById("tripMemberResult");
 
 
@@ -84,9 +84,9 @@ fetch(`/trips/${tripId}/members`).then(response => {
 
 
 // Opening Add User Form
-addUser.addEventListener("click", () => {
+addUser.addEventListener("click", async () => {
     result.replaceChildren();
-    userToAdd.value = "";
+    await loadFriendsForTrip();
     dialog.showModal();
 });
 
@@ -97,42 +97,27 @@ exit.addEventListener("click", () => {
 
 
 // Searching/adding users to trip
-async function searchUser(username){
-    username = username.trim();
+addFriendToTripButton.addEventListener("click", async () => {
 
-    if (!username) {
-        result.textContent = "Please enter a username.";
+    const userId = friendSelect.value;
+
+    if (!userId) {
+        result.textContent = "Please select a friend.";
         return;
     }
 
-    // Validate user exists
-    let response = await fetch(`/users/${username}`);
-    let data = await response.json();
+    try {
 
-    if(!data.success){
-        result.textContent = data.message;
-        return;
-    }
-
-    result.textContent = `${data.user.username} (${data.user.first_name} ${data.user.last_name})`;
-    console.log("Found user: ", data.user);
-
-    let addButton = document.createElement("button");
-    addButton.textContent = "Add to Trip";
-
-    result.appendChild(addButton);
-
-
-    // Add member to trip
-    addButton.addEventListener("click", async () => {
-
-        const addResponse = await fetch(`/trips/${tripId}/members`,
+        const addResponse = await fetch(
+            `/trips/${tripId}/members`,
             {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ user_id: data.user.id })
+                body: JSON.stringify({
+                    user_id: userId
+                })
             }
         );
 
@@ -143,18 +128,51 @@ async function searchUser(username){
             return;
         }
 
-        result.textContent = "User added to trip!";
-        console.log("User added to trip!");
+        result.textContent = "Friend added to trip!";
+
+        console.log("Friend added to trip!");
+
         dialog.close();
-        window.location.href = `/html/trip.html?id=${tripId}`;
 
-    });
-}
+        window.location.href =
+            `/html/trip.html?id=${tripId}`;
 
+    } catch (error) {
 
-// Trigger search
-searchButton.addEventListener("click", async () => {
-    await searchUser(userToAdd.value); 
+        console.error("Could not add friend to trip:", error);
+
+        result.textContent =
+            "Something went wrong. Please try again.";
+    }
 });
 
+
+async function loadFriendsForTrip() {
+    try {
+        const response = await fetch("/friends");
+        const data = await response.json();
+
+        if (!data.success) {
+            console.error(data.message);
+            return;
+        }
+
+        friendSelect.innerHTML = `
+            <option value="">Select a friend</option>
+        `;
+
+        data.friends.forEach(friend => {
+            const option = document.createElement("option");
+
+            option.value = friend.id;
+            option.textContent =
+                `${friend.first_name} ${friend.last_name} (${friend.username})`;
+
+            friendSelect.appendChild(option);
+        });
+
+    } catch (error) {
+        console.error("Could not load friends:", error);
+    }
+}
 

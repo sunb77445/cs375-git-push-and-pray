@@ -33,10 +33,15 @@
             <dialog id="dialog">
                 <h2>Add a Friend to Your Trip!</h2>
 
-                <input id="friendUsername" placeholder="Enter Username" class="friend-search-input">
-                <div id="tripMemberResult"  class="friend-search-result"></div>
-        
-                <button id="searchFriendButton" class="friend-search-button"> Search </button>
+                <select id="friendSelect" class="friend-search-input">
+                    <option value="">Select a friend</option>
+                </select>
+
+                <div id="tripMemberResult" class="friend-search-result"></div>
+
+                <button id="addFriendToTripButton" class="friend-search-button">
+                    Add to Trip
+                </button>
                 <button id="exit">&times;</button>
             </dialog>
 
