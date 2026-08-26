@@ -74,10 +74,10 @@ router.get('/trips:trip_id', async (req, res) => {
             WHERE trip_id = ${id}
         `;
 
-    const hotel = await 
+    const hotel = await
 
     sql`
-            SELECT name, price, check_in, check_out, guests
+            SELECT id AS hotel_id, name, price, check_in, check_out, guests
             FROM hotels
             WHERE trip_id = ${id}
         `;
