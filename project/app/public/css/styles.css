@@ -349,3 +349,40 @@ input[type="range"]{
 .vote-count {
     font-size: 13px;
 }
+
+.saved-hotel-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.saved-hotel-card {
+    padding: 16px 20px;
+    background-color: white;
+    border: 1px solid #D9B99B;
+    border-radius: 10px;
+    color: #2C3A47;
+}
+
+.saved-hotel-name {
+    margin: 0 0 8px 0;
+    font-family: "Comfortaa", sans-serif;
+    color: #B84A62;
+}
+
+.saved-hotel-price {
+    margin: 0 0 4px 0;
+}
+
+.saved-hotel-dates,
+.saved-hotel-guests {
+    margin: 0 0 4px 0;
+    color: #4A6572;
+    font-size: 14px;
+}
+
+.empty-note {
+    color: #4A6572;
+    font-style: italic;
+}
