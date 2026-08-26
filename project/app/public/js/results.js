@@ -205,7 +205,34 @@ tabs.forEach(tab => {
         }
 
     });
+});
 
+// Save the trip to the database
+const saveTripButton = document.getElementById("saveTripButton");
+
+saveTripButton.addEventListener("click", async function() {
+
+    const response = await fetch("/trips", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            name: `Trip to ${destCity}`,
+            dest: destCity,
+            fromDate: fromDate,
+            toDate: toDate,
+            flight: selectedFlight
+        })
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+        alert("Trip saved!");
+    } else {
+        alert(data.message || "Could not save trip.");
+    }
 });
 
 
@@ -246,6 +273,7 @@ save.addEventListener("click", async () => {
     // await saveTrip();
 
 });
+
 
 
 
