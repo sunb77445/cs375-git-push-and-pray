@@ -38,7 +38,10 @@ app.use('/', loginRouter);
 app.use('/', friendRouter);
 app.use('/', tripRouter);
 
-app.listen(port, hostname, () => {
+const server = app.listen(port, hostname, () => {
     console.log(`http://${hostname}:${port}/`);
 })
+
+const { addVotingServer } = require('./clientHandler');
+addVotingServer(server);
 
