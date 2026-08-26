@@ -108,17 +108,15 @@ router.get("/restaurant", (req, res) => {
 router.post("/save-restaurant", (req, res) => {
 
 
-  // TODO: In the future, get the real userId from req.session.userId instead of hardcoding
-  // if (!req.session.userId) {
-  //     return res.status(401).json({ success: false, message: "Unauthorized" });
-  // }
-  let userId = 1;
-  let tripId = 1;
-  // TODO: In the future, get the real tripId
-  // if (!tripId) {
-  //   return res.status(400).json({ success: false, message: "Missing trip ID" });
-  // }
-  const { name, address, website, distance } = req.body;
+  const { tripId, name, address, website, distance } = req.body;
+
+  if (!tripId || !name || !address) {
+    return res.status(400).json({
+      success: false,
+      message: "Missing trip ID or restaurant information"
+    });
+  }
+
   sql`
       INSERT INTO restaurants (trip_id, name, address, website, distance)
       VALUES (${tripId}, ${name}, ${address}, ${website}, ${distance})
@@ -135,11 +133,6 @@ router.post("/save-restaurant", (req, res) => {
 
 
 router.delete("/remove-restaurant/:id", (req, res) => {
-  // TODO: In the future, get the real userId
-  // if (!req.session.userId) {
-  //     return res.status(401).json({ success: false, message: "Unauthorized" });
-  // }
-  let userId = 1;
 
 
   const restaurantId = req.params.id;
@@ -164,12 +157,6 @@ router.delete("/remove-restaurant/:id", (req, res) => {
 
 
 router.get("/saved-restaurants/:tripId", (req, res) => {
-  // TODO: In the future, get the real userId
-  // if (!req.session.userId) {
-  //     return res.status(401).json({ success: false, message: "Unauthorized" });
-  // }
-  let userId = 1;
-
 
   let tripId = req.params.tripId;
 

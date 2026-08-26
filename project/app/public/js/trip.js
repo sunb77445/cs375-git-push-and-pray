@@ -3,6 +3,7 @@ let tripId = urlParams.get('id');
 let dest = document.getElementById("dest");
 let dates = document.getElementById("dates");
 let hotelList = document.getElementById("hotel-list");
+let restaurantList = document.getElementById("restaurant-list");
 
 let dialog = document.getElementById("dialog");
 let addUser = document.getElementById("open-add");
@@ -22,6 +23,7 @@ fetch(`/trips${tripId}`).then(response => {
     dest.textContent = `Trip to ${data.details[0].dest}`;
     dates.textContent = `Planned Dates: ${new Date(data.details[0].from_date).toLocaleDateString()} to ${new Date(data.details[0].to_date).toLocaleDateString()}`;
     renderSavedHotels(data.hotel, hotelList);
+    renderSavedRestaurants(data.restaurant, restaurantList);
 
     console.log(data);
 
@@ -49,6 +51,43 @@ function renderSavedHotels(hotels, container) {
             <!---<p class = "saved-total-price"></p>--->
             <p class="saved-hotel-guests">${hotel.guests} guest${hotel.guests == 1 ? "" : "s"}</p>
         `;
+
+        container.appendChild(card);
+    });
+}
+
+function renderSavedRestaurants(restaurants, container) {
+    container.replaceChildren();
+
+    if (!restaurants || restaurants.length === 0) {
+        const emptyNote = document.createElement("p");
+        emptyNote.className = "empty-note";
+        emptyNote.textContent = "No restaurants selected yet.";
+        container.appendChild(emptyNote);
+        return;
+    }
+
+    restaurants.forEach(restaurant => {
+        const card = document.createElement("div");
+        card.className = "saved-hotel-card";
+
+        const restaurantName = document.createElement("h3");
+        restaurantName.className = "saved-hotel-name";
+        restaurantName.textContent = restaurant.name;
+
+        const address = document.createElement("p");
+        address.textContent = restaurant.address || "Address unavailable";
+
+        card.append(restaurantName, address);
+
+        if (restaurant.website) {
+            const website = document.createElement("a");
+            website.href = restaurant.website;
+            website.target = "_blank";
+            website.rel = "noopener noreferrer";
+            website.textContent = "Visit Website";
+            card.appendChild(website);
+        }
 
         container.appendChild(card);
     });
