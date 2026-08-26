@@ -182,15 +182,26 @@ router.get('/trips/:trip_id/members', async (req, res) => {
     let tripId = Number(req.params.trip_id);
 
     try {
-        const members = await
-    sql`
-            SELECT first_name, last_name, username
-            FROM users
-            WHERE id IN (
-                SELECT user_id
-                FROM trip_members
-                WHERE trip_id = ${tripId}
-            )
+        const members = await sql`
+            SELECT 
+                u.first_name,
+                u.last_name,
+                u.username,
+                CASE
+                    WHEN u.id = t.user_id THEN true
+                    ELSE false
+                END AS is_creator
+            FROM users u
+            JOIN trips t
+                ON t.trip_id = ${tripId}
+            WHERE 
+                u.id = t.user_id
+                OR u.id IN (
+                    SELECT user_id
+                    FROM trip_members
+                    WHERE trip_id = ${tripId}
+                )
+            ORDER BY is_creator DESC, u.username
         `;
 
     res.json({members});
