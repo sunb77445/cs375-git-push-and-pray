@@ -3,7 +3,7 @@ async function loadCurrentUser() {
     const data = await response.json();
 
     if (!data.loggedIn) {
-        window.location.href = "login.html";
+        window.location.href = "index.html";
         return;
     }
 
@@ -43,10 +43,15 @@ document.getElementById("logoutButton").addEventListener("click", async function
     const data = await response.json();
 
     if (data.success) {
-        window.location.href = "login.html";
+        window.location.href = "index.html";
     }
 });
 
 document.getElementById("createPlanButton").addEventListener("click", function() {
     window.location.href = "create.html";
 });
+
+
+
+
+
