@@ -3,9 +3,9 @@ require("dotenv").config();
 const express = require('express');
 const session = require("express-session");
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 const path = require('path');
-let hostname = "localhost";
+const hostname = "0.0.0.0";
 
 const foodRouter = require('./routes/food-server');
 const flightsRouter = require('./routes/flights-server');
