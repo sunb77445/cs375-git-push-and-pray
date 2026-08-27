@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html>
-    <body>
-        <head>
-            <title>Create a New Trip</title>
-            <link rel="stylesheet" href="/css/styles.css">
-        </head>
+    <head>
+    <title>Create a New Trip</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="banner-container">
 
         <form action="dashboard.html"><button type="submit">Back to Dashboard</button></form>
 
@@ -44,28 +45,34 @@
 
 
 
-             <input class="slider" id="food" type="range" min="0" max="100" value="33.3"> 
-             <span id="food-value">33%</span>
-             <label for="food">Food</label>
+            <div class="slider-container">
+                <input class="slider" id="food" type="range" min="0" max="100" value="33.3"> 
+                <span id="food-value">33%</span>
+                <label for="food">Food</label>
+            </div>
 
-             <input class="slider" id="accomodations" type="range" min="0" max="100" value="33.3">
-             <span id="accomodations-value">33%</span>
-             <label for="accomodations">Hotels</label>
-        
-             <input class="slider" id="flights" type="range" min="0" max="100" value="33.3">
-             <span id="flights-value">33%</span>
-             <label for="flights">Flights</label>
+            <div class="slider-container">
+                <input class="slider" id="accomodations" type="range" min="0" max="100" value="33.3">
+                <span id="accomodations-value">33%</span>
+                <label for="accomodations">Hotels</label>
+            </div>
+       
+            <div class="slider-container">
+                <input class="slider" id="flights" type="range" min="0" max="100" value="33.3">
+                <span id="flights-value">33%</span>
+                <label for="flights">Flights</label>
+            </div>
 
-              <div>
-                 <button id="submit">Done!</button>
-              </div>
+            <div class="button">
+                <button id="submit">Done!</button>
+            </div>
         </div>
 
 
          <script src="/js/hotels.js"></script>
          <script src="/js/create.js"></script>
-
-    </body>
+    </div>
+</body>
 
 </html>
 

@@ -34,12 +34,12 @@ button#next-button:disabled {
 }
 
 .step-container.slide-in-box {
-  border: 2px solid #B84A62;
-    border-radius: 15px;
-    justify-content: center;
-    align-items: center;
-    margin: 30px; 
-    padding: 20px; 
+    background-color: white;
+    border: 1px solid #B84A62;
+    border-radius: 8px;
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 600px;
 }
 
 .step-container.slide-in-box.active { 
@@ -94,8 +94,10 @@ h1 {
 }
 
 
-.button {
+.step-container .button {
     padding-top: 20px;
+    display: flex;
+    justify-content: flex-end;
 }
 
 label {
@@ -103,17 +105,63 @@ label {
     margin-bottom: 20px;
 }
 
-input[type="range"]{
-    width: 350px;
+.slider-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
 }
 
-.step-container{
-    border: 2px solid #B84A62;
-    border-radius: 15px;
-    justify-content: center;
-    align-items: center;
-    margin: 30px; 
-    padding: 20px; 
+.slider-container .slider {
+    flex: 1;
+    min-width: 200px;
+}
+
+.slider-container span {
+    min-width: 45px;
+    text-align: right;
+    font-weight: bold;
+}
+
+.slider-container label {
+    min-width: 80px;
+    margin-bottom: 0;
+}
+
+.step-container {
+    background-color: white;
+    border: 1px solid #B84A62;
+    border-radius: 8px;
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 600px;
+}
+
+.step-container input[type="text"],
+.step-container input[type="number"],
+.step-container input[type="date"] {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #D9B99B;
+    border-radius: 4px;
+    font-family: 'Comfortaa', sans-serif;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.step-container input:focus {
+    outline: none;
+    border-color: #B84A62;
+}
+
+.step-container p {
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.step-container h2 {
+    margin-top: 0;
 }
 
 .travel-nav {
