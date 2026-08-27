@@ -218,9 +218,26 @@ tabs.forEach(tab => {
                      hotelCost += hotel.total_rate.extracted_lowest;
                  }
              }
-             let totalCost = hotelCost;
+
+             // Render the selected flight (selectedFlight comes from flights.js)
+             flightSelection.replaceChildren();
+             let flightCost = 0;
+             if (typeof selectedFlight !== "undefined" && selectedFlight) {
+                 const flightEl = document.createElement("div");
+                 flightEl.innerHTML = `
+                    <h2>${selectedFlight.route}</h2>
+                    <p>${selectedFlight.meta || ""}</p>
+                    <p>Price: $${selectedFlight.price}</p>
+                 `;
+                 flightSelection.appendChild(flightEl);
+                 flightCost = Number(selectedFlight.price) || 0;
+             } else {
+                 flightSelection.textContent = "No flight selected";
+             }
+
+             let totalCost = hotelCost + flightCost;
              total.textContent = `Total Cost: $${totalCost}`;
-             alloc.textContent = `You've used ${hotelCost / totalBudget}% of your budget!`
+             alloc.textContent = `You've used ${((totalCost / totalBudget) * 100).toFixed(1)}% of your budget!`
 
         } else {
             message.textContent = "Here are your results!";
