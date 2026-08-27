@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <head>
+            <title>Results</title>
+            <link rel="stylesheet" href="/css/styles.css">
+            <link rel="stylesheet" href="/css/hotels.css">
+             <link rel="stylesheet" href="/css/restaurant.css" />
+        </head>
+
+
+        <nav class="travel-nav">
+            <ul>
+                <li id="hotels" class="tab-button active">Hotels</li>
+                <li id="flights" class="tab-button">Flights</li>
+                <li id="food" class="tab-button">Restaurants</li>
+                <li id="selected" class="tab-button">Selections</li>
+            </ul>
+        
+        </nav>
+
+        <div class="loading" >
+            <img src="images/loading.gif">
+            <p>Creating Your Trip...</p>
+        </div> 
+
+        <h4 id="message"> Here are your results! </h4>
+
+        <div id="results-page">
+
+            <div id="hotels-results" class="results-page active"></div>
+
+            <div id="flights-results" class="results-page"></div>
+
+            <div id="food-results" class="results-page"></div>
+
+            <div id="selected-results" class="results-page">
+                <ul>
+                    <h1 id="selected-hotel">Hotel</h1>
+                    <h1 id="selected-flight">Flight</h1>
+                    <h1 id="selected-restuarant">Restaurants</h1>
+                </ul>
+                <p id="total">Total Cost: </p>
+                <p id="calc">You've used _% of your budget!</p>
+                <button id="save-trip">Save Trip</button>
+
+            </div>
+
+        </div>
+
+
+         <script src="/js/hotels.js"></script>
+         <script src="/js/create.js"></script>
+         <script src="/js/flights.js"></script>
+         <script src="/js/restaurant.js"></script>
+         <script src="/js/results.js"></script>
+
+  
+
+
+    </body>
+</html>
