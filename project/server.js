@@ -39,7 +39,7 @@ app.use('/', friendRouter);
 app.use('/', tripRouter);
 
 const server = app.listen(port, hostname, () => {
-    console.log(`http://${hostname}:${port}/login.html`);
+    console.log(`http://localhost:${port}/index.html`);
 })
 
 const { addVotingServer } = require('./clientHandler');
