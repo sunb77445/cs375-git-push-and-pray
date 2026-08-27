@@ -17,7 +17,7 @@ function loadAndRenderRestaurants(places, element) {
 }
 
 
-// Displaying restaurants with Select/Deselect functionality
+// Displaying restaurants with Select/Deselect
 function renderRestaurants(data, element, savedList) {
     element.replaceChildren();
 
@@ -216,7 +216,7 @@ locationInput.addEventListener("input", () => {
 });
 
 
-// FIND RESTAURANTS
+// find restaurants
 sendButton.addEventListener("click", () => {
     error2.textContent = "";
     result.replaceChildren();
