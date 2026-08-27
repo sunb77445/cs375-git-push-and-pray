@@ -299,18 +299,6 @@ save.addEventListener("click", async () => {
 
 
 
-
-    // FOR HOTELS TABLE
-
-
-    // FOR RESTUARANTS TABLE
-
-
-    // FOR FLIGHTS TABLE
-
-
-    // await saveTrip();
-
 });
 
 
