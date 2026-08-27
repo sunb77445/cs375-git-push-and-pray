@@ -104,7 +104,6 @@ function getFoodSelection(list){
 }
 
 
-
 async function saveTrip(userId){
 
     let tripName = `Trip to ${destCity}`;
@@ -189,6 +188,43 @@ async function saveTrip(userId){
 
 }
 
+function renderSelectedRestaurants(restaurants, container) {
+     container.innerHTML = "";
+
+    if (!restaurants || restaurants.length === 0) {
+        const emptyNote = document.createElement("p");
+        emptyNote.className = "empty-note";
+        emptyNote.textContent = "No restaurants selected yet.";
+        container.appendChild(emptyNote);
+        return;
+    }
+
+    restaurants.forEach(restaurant => {
+        const card = document.createElement("div");
+        card.className = "saved-hotel-card";
+
+        const restaurantName = document.createElement("h3");
+        restaurantName.className = "saved-hotel-name";
+        restaurantName.textContent = restaurant.properties.name;
+
+        const address = document.createElement("p");
+        address.textContent = restaurant.properties.address_line2 || "Address unavailable";
+
+        card.append(restaurantName, address);
+
+        if (restaurant.properties.website) {
+            const website = document.createElement("a");
+            website.href = restaurant.properties.website;
+            website.target = "_blank";
+            website.rel = "noopener noreferrer";
+            website.textContent = "Visit Website";
+            card.appendChild(website);
+        }
+
+        container.appendChild(card);
+    });
+}
+
 
 
 
@@ -238,10 +274,9 @@ tabs.forEach(tab => {
              }
 
              // Display selected restaurants
-             // foodSelection.textContent = "Restaurants";
+             foodSelection.textContent = "Restaurants";
              // renderRestaurants(getFoodSelection([]), foodSelection, []);
-             test();
-             renderSavedRestaurants(getFoodSelection([]), foodSelection);
+             renderSelectedRestaurants(getFoodSelection([]), foodSelection);
 
 
              // Display selected flights

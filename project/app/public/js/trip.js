@@ -1,5 +1,8 @@
 const urlParams = new URLSearchParams(window.location.search);
 let trip_id = urlParams.get('id');
+console.log("Trip ID:", trip_id);
+
+
 let dest = document.getElementById("dest");
 let dates = document.getElementById("dates");
 let hotelList = document.getElementById("hotel-list");
@@ -14,21 +17,26 @@ let friendSelect = document.getElementById("friendSelect");
 let addFriendToTripButton = document.getElementById("addFriendToTripButton");
 const memberResult = document.getElementById("tripMemberResult");
 
+
+
 // fetch all trip details
-fetch(`/trips${trip_id}`).then(response => {
-    return response.json();
+async function getTripDetails(){
 
-}).then(data => {
-    dest.textContent = `Trip to ${data.details[0].dest}`;
-    dates.textContent = `Planned Dates: ${new Date(data.details[0].from_date).toLocaleDateString()} to ${new Date(data.details[0].to_date).toLocaleDateString()}`;
-    renderSavedHotels(data.hotel, hotelList);
-    renderSavedRestaurants(data.restaurant, restaurantList);
+    try {
+        let response = await fetch(`/trips${trip_id}`)
+        let data = response.json();
 
-    console.log(data);
+        dest.textContent = `Trip to ${data.details[0].dest}`;
+        dates.textContent = `Planned Dates: ${new Date(data.details[0].from_date).toLocaleDateString()} to ${new Date(data.details[0].to_date).toLocaleDateString()}`;
+        renderSavedHotels(data.hotel, hotelList);
+        renderSavedRestaurants(data.restaurant, restaurantList);
 
-}).catch(error => {
-    console.log(error);
-});
+        console.log(data);
+
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 
 // Displays the trip's saved hotel(s) as clean cards
@@ -55,6 +63,7 @@ function renderSavedHotels(hotels, container) {
     });
 }
 
+// Displays the trip's saved restaurant(s) as clean cards
 function renderSavedRestaurants(restaurants, container) {
      container.innerHTML = "";
 
@@ -94,31 +103,38 @@ function renderSavedRestaurants(restaurants, container) {
 
 
 
-// Fetching members added to current trip
-fetch(`/trips/${trip_id}/members`).then(response => {
-    return response.json();
+// Displaying members added to current trip
+async function displayMembers(){
+    try {
+        let response = await fetch(`/trips/${trip_id}/members`); 
+        let data = response.json();
+        console.log(data);
+        let members = data.members;
 
-}).then(data => {
-    console.log(data);
-    let members = data.members;
+        if(members.length == 0){
+            let p = document.createElement("p");
+            p.textContent = "Add a friend to your trip to start collaborating!"
+            membersList.append(p);
+        }
 
-    if(members.length == 0){
-        let p = document.createElement("p");
-        p.textContent = "Add a friend to your trip to start collaborating!"
-        membersList.append(p);
+        members.forEach(member => {
+            let li = document.createElement("li");
+            li.textContent = `👤 ${member.first_name} ${member.last_name} (${member.username})`;
+            membersList.append(li);
+        });
+    } catch (error) {
+        console.log(error);
     }
 
-    members.forEach(member => {
-        let li = document.createElement("li");
-        li.textContent = `👤 ${member.first_name} ${member.last_name} (${member.username})`;
-        membersList.append(li);
-    });
-   
-}).catch(error => {
-    console.log(error);
-});
+}
 
 
+
+/*// Loading page content
+window.addEventListener('load', async (event) => {
+   await displayMembers();
+   await getTripDetails();
+}); */
 
 
 // Opening Add User Form
@@ -185,6 +201,7 @@ addFriendToTripButton.addEventListener("click", async () => {
 });
 
 
+// fetching members apart of trip 
 async function loadFriendsForTrip() {
     try {
         const response = await fetch("/friends");
