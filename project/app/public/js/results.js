@@ -10,7 +10,7 @@ const tabs = Array.from(document.getElementsByClassName('tab-button'));
 
 let hotelSelectionElement = document.getElementById("selected-hotel");
 let flightSelection = document.getElementById("selected-flight");
-let foodSelection = document.getElementById("selected-restaurant");
+let foodSelection = document.getElementById("selected-restaurants");
 
 let save = document.getElementById("save-trip");
 let alloc = document.getElementById("calc");
@@ -65,6 +65,7 @@ async function getFlights(){
     let flightBody = await flightResponse.json();
     console.log(flightBody);
     renderResults(flightBody.flights, flightPage);
+
 }
 
 async function getFood(){
@@ -74,6 +75,7 @@ async function getFood(){
     let lon = geoBody.lon;
     let foodResponse = await fetch(`/restaurant?lat=${lat}&lon=${lon}&distance=1000`);
     let foodBody = await foodResponse.json();
+    foodData = foodBody;
 
     console.log(foodBody); 
     loadAndRenderRestaurants(foodBody.features, foodPage);
@@ -89,6 +91,19 @@ function getHotelSelection(list){
 
     return list;
 }
+
+function getFoodSelection(list){
+    const selectedButtons = document.getElementsByClassName("selected-food");
+
+    Array.from(selectedButtons).forEach(btn => {
+        const foodInfo = btn.parentElement;
+        list.push(foodData.features[foodInfo.id]);
+    });
+
+    return list;
+}
+
+
 
 async function saveTrip(userId){
 
@@ -208,8 +223,11 @@ tabs.forEach(tab => {
         if(page.id == "selected-results"){
              message.textContent = "Here's what you've selected!";
 
+
+             // Display selected hotels
              let hotelSelection = getHotelSelection([]);
              hotelSelectionElement.replaceChildren();
+             hotelSelectionElement.textContent = "Hotel";
              formatHotel(hotelSelection, hotelSelectionElement);
 
              let hotelCost = 0;
@@ -218,6 +236,16 @@ tabs.forEach(tab => {
                      hotelCost += hotel.total_rate.extracted_lowest;
                  }
              }
+
+             // Display selected restaurants
+             // foodSelection.textContent = "Restaurants";
+             // renderRestaurants(getFoodSelection([]), foodSelection, []);
+             test();
+             renderSavedRestaurants(getFoodSelection([]), foodSelection);
+
+
+             // Display selected flights
+
              let totalCost = hotelCost;
              total.textContent = `Total Cost: $${totalCost}`;
              alloc.textContent = `You've used ${hotelCost / totalBudget}% of your budget!`
@@ -229,6 +257,8 @@ tabs.forEach(tab => {
     });
 });
 
+
+/*
 // Save the trip to the database
 const saveTripButton = document.getElementById("saveTripButton");
 
@@ -257,6 +287,8 @@ saveTripButton.addEventListener("click", async function() {
     }
 });
 
+*/
+
 
 // Save all selections and trip to database
 save.addEventListener("click", async () => {
@@ -280,19 +312,6 @@ save.addEventListener("click", async () => {
         console.log(error);
     }
 
-
-
-
-    // FOR HOTELS TABLE
-
-
-    // FOR RESTUARANTS TABLE
-
-
-    // FOR FLIGHTS TABLE
-
-
-    // await saveTrip();
 
 });
 

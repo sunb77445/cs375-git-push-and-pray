@@ -1,5 +1,5 @@
 const urlParams = new URLSearchParams(window.location.search);
-let tripId = urlParams.get('id');
+let trip_id = urlParams.get('id');
 let dest = document.getElementById("dest");
 let dates = document.getElementById("dates");
 let hotelList = document.getElementById("hotel-list");
@@ -12,11 +12,10 @@ let membersList = document.getElementById("member-list");
 let creator = document.getElementById("creator");
 let friendSelect = document.getElementById("friendSelect");
 let addFriendToTripButton = document.getElementById("addFriendToTripButton");
-const result = document.getElementById("tripMemberResult");
-
+const memberResult = document.getElementById("tripMemberResult");
 
 // fetch all trip details
-fetch(`/trips${tripId}`).then(response => {
+fetch(`/trips${trip_id}`).then(response => {
     return response.json();
 
 }).then(data => {
@@ -57,7 +56,7 @@ function renderSavedHotels(hotels, container) {
 }
 
 function renderSavedRestaurants(restaurants, container) {
-    container.replaceChildren();
+     container.innerHTML = "";
 
     if (!restaurants || restaurants.length === 0) {
         const emptyNote = document.createElement("p");
@@ -96,7 +95,7 @@ function renderSavedRestaurants(restaurants, container) {
 
 
 // Fetching members added to current trip
-fetch(`/trips/${tripId}/members`).then(response => {
+fetch(`/trips/${trip_id}/members`).then(response => {
     return response.json();
 
 }).then(data => {
@@ -124,7 +123,7 @@ fetch(`/trips/${tripId}/members`).then(response => {
 
 // Opening Add User Form
 addUser.addEventListener("click", async () => {
-    result.replaceChildren();
+   memberResult.replaceChildren();
     await loadFriendsForTrip();
     dialog.showModal();
 });
@@ -141,14 +140,14 @@ addFriendToTripButton.addEventListener("click", async () => {
     const userId = friendSelect.value;
 
     if (!userId) {
-        result.textContent = "Please select a friend.";
+        memberResult.textContent = "Please select a friend.";
         return;
     }
 
     try {
 
         const addResponse = await fetch(
-            `/trips/${tripId}/members`,
+            `/trips/${trip_id}/members`,
             {
                 method: "POST",
                 headers: {
@@ -163,24 +162,24 @@ addFriendToTripButton.addEventListener("click", async () => {
         const addData = await addResponse.json();
 
         if (!addResponse.ok) {
-            result.textContent = addData.message;
+            memberResult.textContent = addData.message;
             return;
         }
 
-        result.textContent = "Friend added to trip!";
+        memberResult.textContent = "Friend added to trip!";
 
         console.log("Friend added to trip!");
 
         dialog.close();
 
         window.location.href =
-            `/html/trip.html?id=${tripId}`;
+            `/html/trip.html?id=${trip_id}`;
 
     } catch (error) {
 
         console.error("Could not add friend to trip:", error);
 
-        result.textContent =
+        memberResult.textContent =
             "Something went wrong. Please try again.";
     }
 });

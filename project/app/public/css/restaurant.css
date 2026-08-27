@@ -67,3 +67,19 @@ input {
     border-radius: 15px;
     
 }
+
+.restaurant-card {
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+}
+
+.restaurant-card h2 {
+    margin: 0 0 8px 0;
+    font-size: 20px;
+}
+
+.restaurant-card p {
+    margin: 5px 0;
+    font-size: 14px;
+}

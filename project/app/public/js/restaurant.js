@@ -20,10 +20,15 @@ function loadAndRenderRestaurants(places, element) {
 // Displaying restaurants with Select/Deselect functionality
 function renderRestaurants(data, element, savedList) {
     element.replaceChildren();
+    let i = 0;
+
 
 
     data.forEach(place => {
         let restaurant = document.createElement("div");
+        restaurant.id = i;
+        restaurant.classList.add("restaurant-card");
+        i++;
 
 
         // Name
@@ -88,6 +93,7 @@ function renderRestaurants(data, element, savedList) {
         if (savedDatabaseId) {
             selectBtn.textContent = "Deselect";
             selectBtn.style.backgroundColor = "orange";
+            selectBtn.classList.add("selected-food");
         } else {
             selectBtn.textContent = "Select";
             selectBtn.style.backgroundColor = "";
@@ -100,11 +106,12 @@ function renderRestaurants(data, element, savedList) {
                     name: restaurantName,
                     address: fullAddress,
                     website: websiteUrl,
-                    distance: calculatedMiles
+                    distance: calculatedMiles,
                 });
-
+                
                 selectBtn.textContent = "Deselect";
                 selectBtn.style.backgroundColor = "orange";
+                selectBtn.classList.toggle("selected-food");
 
 
             } else {
@@ -116,6 +123,7 @@ function renderRestaurants(data, element, savedList) {
                 savedDatabaseId = null;
                 selectBtn.textContent = "Select";
                 selectBtn.style.backgroundColor = "";
+                selectBtn.classList.toggle("selected-food");
             }
         });
 
