@@ -21,6 +21,8 @@ const params = new URLSearchParams(window.location.search);
 let destCity = params.get("destCity");
 let destState = params.get("destState");
 let destCountry = params.get("destCountry");
+let destLat = params.get("destLat");
+let destLon = params.get("destLon");
 let fromCity = params.get("fromCity");
 let fromState = params.get("fromState");
 let fromDate = params.get("fromDate");
@@ -68,10 +70,18 @@ async function getFlights(){
 }
 
 async function getFood(){
-    let geoResponse = await fetch(`/geocode?city=${destCity}`);
-    let geoBody = await geoResponse.json();
-    let lat = geoBody.lat;
-    let lon = geoBody.lon;
+    let lat = destLat;
+    let lon = destLon;
+
+    if (lat === null || lon === null) {
+        let geoResponse = await fetch(`/geocode?city=${destCity}`);
+        let geoBody = await geoResponse.json();
+        lat = geoBody.lat;
+        lon = geoBody.lon;
+    }
+
+    selectedLat = Number(lat);
+    selectedLon = Number(lon);
     let foodResponse = await fetch(`/restaurant?lat=${lat}&lon=${lon}&distance=1000`);
     let foodBody = await foodResponse.json();
 

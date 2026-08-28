@@ -6,6 +6,10 @@ let inputs = Array.from(document.getElementsByClassName("required"));
 let submit = document.getElementById("submit");
 let loadingScreen = document.querySelector(".loading");
 let sliders = document.querySelectorAll(".slider");
+let cityInput = document.getElementById("city");
+let citySuggestions = document.getElementById("city-suggestions");
+let selectedDestLat = null;
+let selectedDestLon = null;
 
 
 
@@ -34,6 +38,60 @@ inputs.forEach(input => {
 });
 
 checkInputs();
+
+// Autocomplete the destination and fill in its location details.
+cityInput.addEventListener("input", () => {
+   const text = cityInput.value.trim();
+   selectedDestLat = null;
+   selectedDestLon = null;
+   citySuggestions.replaceChildren();
+
+   if (text.length < 2) {
+      return;
+   }
+
+   fetch(`/autocomplete?text=${encodeURIComponent(text)}`)
+      .then(response => {
+         if (!response.ok) {
+            throw new Error("Autocomplete failed");
+         }
+         return response.json();
+      })
+      .then(data => {
+         const places = data.features || [];
+         if (places.length === 0) {
+            return;
+         }
+
+         places.forEach(place => {
+            let option = document.createElement("div");
+
+            const properties = place.properties || {};
+            const formatted = properties.formatted || "Unknown location";
+            const coordinates = place.geometry && place.geometry.coordinates;
+
+            if (!coordinates || coordinates.length < 2) {
+               return;
+            }
+
+            option.textContent = formatted;
+            option.addEventListener("click", () => {
+               cityInput.value = properties.city || properties.town ||
+                  properties.village || properties.municipality ||
+                  properties.name || formatted;
+               document.getElementById("state").value = properties.state || "";
+               document.getElementById("country").value = properties.country || "";
+               selectedDestLon = coordinates[0];
+               selectedDestLat = coordinates[1];
+               citySuggestions.replaceChildren();
+               checkInputs();
+            });
+
+            citySuggestions.appendChild(option);
+         });
+      })
+      .catch(error => console.log(error));
+});
 
 
 // budget preferences
@@ -108,6 +166,11 @@ async function onSubmit(){
       flightBudget: flightBudget,
 
    });
+
+   if (selectedDestLat !== null && selectedDestLon !== null) {
+      params.set("destLat", selectedDestLat);
+      params.set("destLon", selectedDestLon);
+   }
 
    window.location.href = `results.html?${params}`;
 

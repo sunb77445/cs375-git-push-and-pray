@@ -17,7 +17,7 @@ function loadAndRenderRestaurants(places, element) {
 }
 
 
-// Displaying restaurants with Select/Deselect
+// Displaying restaurants
 function renderRestaurants(data, element, savedList) {
     element.replaceChildren();
 
