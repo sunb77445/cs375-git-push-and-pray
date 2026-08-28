@@ -63,6 +63,72 @@ router.get('/trips', async (req, res) => {
 });
 
 
+// Deletes a trip requested by its owner.
+router.delete('/trips/:trip_id', async (req, res) => {
+    if (!req.session.userId) {
+        return res.status(401).json({
+            success: false,
+            message: "You must be logged in"
+        });
+    }
+
+    const tripId = Number(req.params.trip_id);
+
+    if (!Number.isInteger(tripId)) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid trip ID"
+        });
+    }
+
+    try {
+        const owner = await sql`
+            SELECT trip_id
+            FROM trips
+            WHERE trip_id = ${tripId}
+            AND user_id = ${req.session.userId}
+        `;
+
+        if (owner.length === 0) {
+            return res.status(403).json({
+                success: false,
+                message: "Only the trip owner can delete this trip"
+            });
+        }
+
+        await sql`DELETE FROM trip_members WHERE trip_id = ${tripId}`;
+        await sql`DELETE FROM hotels WHERE trip_id = ${tripId}`;
+        await sql`DELETE FROM flights WHERE trip_id = ${tripId}`;
+        await sql`DELETE FROM restaurants WHERE trip_id = ${tripId}`;
+        await sql`DELETE FROM trip_votes WHERE trip_id = ${tripId}`;
+
+        const deletedTrip = await sql`
+            DELETE FROM trips
+            WHERE trip_id = ${tripId}
+            RETURNING trip_id
+        `;
+
+        if (deletedTrip.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Trip not found"
+            });
+        }
+
+        res.json({
+            success: true,
+            trip_id: deletedTrip[0].trip_id
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Could not delete trip"
+        });
+    }
+});
+
+
 // retrieves info for a specific trip
 router.get('/trips:trip_id', async (req, res) => {
     const id = req.params.trip_id;

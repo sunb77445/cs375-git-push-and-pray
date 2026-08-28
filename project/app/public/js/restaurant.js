@@ -24,6 +24,9 @@ function renderRestaurants(data, element, savedList) {
 
     data.forEach(place => {
         let restaurant = document.createElement("div");
+        restaurant.className = "restaurant-card";
+        let restaurantInfo = document.createElement("div");
+        restaurantInfo.className = "restaurant-info";
 
 
         // Name
@@ -82,12 +85,13 @@ function renderRestaurants(data, element, savedList) {
 
         // Select Button & State
         let selectBtn = document.createElement("button");
+        selectBtn.className = "select-restaurant";
         let savedDatabaseId = existingRecord ? existingRecord.id : null;
 
 
         if (savedDatabaseId) {
             selectBtn.textContent = "Deselect";
-            selectBtn.style.backgroundColor = "orange";
+            selectBtn.style.backgroundColor = "red";
         } else {
             selectBtn.textContent = "Select";
             selectBtn.style.backgroundColor = "";
@@ -104,10 +108,11 @@ function renderRestaurants(data, element, savedList) {
                 });
 
                 selectBtn.textContent = "Deselect";
-                selectBtn.style.backgroundColor = "orange";
+                selectBtn.style.backgroundColor = "red";
 
 
             } else {
+                //remove restaurant from selectedRestaurants
                 window.selectedRestaurants = window.selectedRestaurants.filter(restaurant =>
                     restaurant.name !== restaurantName ||
                     restaurant.address !== fullAddress
@@ -120,11 +125,12 @@ function renderRestaurants(data, element, savedList) {
         });
 
 
-        restaurant.appendChild(name);
-        restaurant.appendChild(address);
-        restaurant.appendChild(websiteContainer);
-        restaurant.appendChild(distanceDisplay);
-        restaurant.appendChild(selectBtn);
+        restaurantInfo.appendChild(name);
+        restaurantInfo.appendChild(address);
+        restaurantInfo.appendChild(websiteContainer);
+        restaurantInfo.appendChild(distanceDisplay);
+        restaurantInfo.appendChild(selectBtn);
+        restaurant.appendChild(restaurantInfo);
 
 
         element.appendChild(restaurant);

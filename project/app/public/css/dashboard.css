@@ -132,6 +132,21 @@ main {
     transform: translateY(-2px);
 }
 
+.delete-trip-button {
+    margin-top: 15px;
+    padding: 9px 14px;
+    border: 0;
+    border-radius: 8px;
+    background-color: #b84a62;
+    color: white;
+    font-family: "Comfortaa", sans-serif;
+    cursor: pointer;
+}
+
+.delete-trip-button:hover {
+    background-color: #a03d52;
+}
+
 .user-menu {
     position: relative;
 }

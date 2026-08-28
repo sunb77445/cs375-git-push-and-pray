@@ -20,6 +20,12 @@ fetch(`/trips${tripId}`).then(response => {
     return response.json();
 
 }).then(data => {
+    //redirect to dashboard if trip doesn't exist
+    if (!data.details || data.details.length === 0) {
+        window.location.href = "dashboard.html";
+        return;
+    }
+
     dest.textContent = `Trip to ${data.details[0].dest}`;
     dates.textContent = `Planned Dates: ${new Date(data.details[0].from_date).toLocaleDateString()} to ${new Date(data.details[0].to_date).toLocaleDateString()}`;
     renderSavedHotels(data.hotel, hotelList);
