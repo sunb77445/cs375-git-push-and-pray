@@ -7,6 +7,7 @@ let dest = document.getElementById("dest");
 let dates = document.getElementById("dates");
 let hotelList = document.getElementById("hotel-list");
 let restaurantList = document.getElementById("restaurant-list");
+let tripName = document.getElementById("tripName");
 
 let dialog = document.getElementById("dialog");
 let addUser = document.getElementById("open-add");
@@ -31,6 +32,7 @@ async function getTripDetails(){
             return;
         }
 
+        tripName.textContent = data.details[0].name;
         dest.textContent = `Trip to ${data.details[0].dest}`;
         dates.textContent = `Planned Dates: ${new Date(data.details[0].from_date).toLocaleDateString()} to ${new Date(data.details[0].to_date).toLocaleDateString()}`;
         renderSavedHotels(data.hotel, hotelList);
