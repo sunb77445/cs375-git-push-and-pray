@@ -287,4 +287,47 @@ router.get('/trips/:trip_id/members', async (req, res) => {
 
 });
 
+// Finalizes a trip's hotel choice: keeps the chosen hotel, removes the rest
+router.post('/trips/:trip_id/hotels/:hotel_id/finalize', async (req, res) => {
+    if (!req.session.userId) {
+        return res.status(401).json({
+            success: false,
+            message: "You must be logged in"
+        });
+    }
+
+    const tripId = Number(req.params.trip_id);
+    const hotelId = Number(req.params.hotel_id);
+
+    try {
+        const membership = await sql`
+            SELECT trip_id FROM trips WHERE trip_id = ${tripId} AND user_id = ${req.session.userId}
+            UNION
+            SELECT trip_id FROM trip_members WHERE trip_id = ${tripId} AND user_id = ${req.session.userId}
+        `;
+
+        if (membership.length === 0) {
+            return res.status(403).json({
+                success: false,
+                message: "You are not a member of this trip"
+            });
+        }
+
+        await sql`
+            DELETE FROM hotels
+            WHERE trip_id = ${tripId}
+            AND id != ${hotelId}
+        `;
+
+        res.json({ success: true });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Could not finalize hotel"
+        });
+    }
+});
+
 module.exports = router;
