@@ -33,6 +33,7 @@ let foodBudget = params.get("foodBudget");
 let hotelBudget = params.get("hotelBudget");
 let flightBudget = params.get("flightBudget");
 let attractionsBudget = params.get("attractionsBudget");
+let tripName = params.get("tripName");
 
 
 // response data
@@ -115,8 +116,6 @@ function getFoodSelection(list){
 
 
 async function saveTrip(userId){
-
-    let tripName = `Trip to ${destCity}`;
 
     // Save trip to db
     try {

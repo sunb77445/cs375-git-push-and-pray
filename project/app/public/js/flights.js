@@ -88,7 +88,7 @@
                         <strong>${flight.route}</strong><br>
                         ${flight.meta}<br>
                         $${flight.price}
-                        <button class="add-btn">Add to itinerary</button>
+                        <button class="add-btn">Select flight</button>
                     </p>
                     <hr>
                 `;
@@ -102,13 +102,13 @@
                     document
                         .querySelectorAll(".add-btn")
                         .forEach(function(button) {
-                            button.textContent = "Add to itinerary";
+                            button.textContent = "Select flight";
                             button.disabled = false;
                         });
 
                     selectedFlight = flight;
 
-                    addButton.textContent = "✓ Selected for trip";
+                    addButton.textContent = "Selected";
                     addButton.disabled = true;
                 });
             });
