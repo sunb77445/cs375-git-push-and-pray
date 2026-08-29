@@ -33,6 +33,7 @@ let foodBudget = params.get("foodBudget");
 let hotelBudget = params.get("hotelBudget");
 let flightBudget = params.get("flightBudget");
 let attractionsBudget = params.get("attractionsBudget");
+let tripName = params.get("tripName");
 
 
 // response data
