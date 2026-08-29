@@ -186,6 +186,41 @@ router.post(
     }
 );
 
+// Save a selected flight to a trip
+const sql = require("../config/db");
+
+router.post("/api/flights/save", async (req, res) => {
+    const { tripId, route, airline, price } = req.body;
+
+    if (!tripId || !route) {
+        return res.status(400).json({
+            success: false,
+            message: "Missing trip ID or flight information."
+        });
+    }
+
+    try {
+        const [flight] = await sql`
+            INSERT INTO flights (trip_id, route, airline, price)
+            VALUES (${tripId}, ${route}, ${airline}, ${price})
+            RETURNING *
+        `;
+
+        res.json({
+            success: true,
+            message: "Flight saved to trip successfully!",
+            flight
+        });
+
+    } catch (error) {
+        console.error("Error saving flight:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to save flight to database.",
+            details: error.message
+        });
+    }
+});
 
 module.exports = router;
 

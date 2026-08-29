@@ -151,6 +151,26 @@ async function saveTrip(userId){
         console.log("Error saving hotel:", error.message);
     }
 
+        // Save selected flight to the newly created trip
+    try {
+        if (typeof selectedFlight !== "undefined" && selectedFlight) {
+            await fetch("/api/flights/save", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    tripId: tripId,
+                    route: selectedFlight.route,
+                    airline: selectedFlight.meta,
+                    price: selectedFlight.price
+                })
+            });
+        }
+    } catch (error) {
+        console.log("Error saving flight:", error.message);
+    }
+
     // Save selected restaurants to the newly created trip
     try {
         for (const restaurant of window.selectedRestaurants) {
