@@ -201,13 +201,14 @@ function renderSelectedRestaurants(restaurants, container) {
 
     restaurants.forEach(restaurant => {
         const card = document.createElement("div");
-        card.className = "saved-hotel-card";
+        card.className = "saved-restaurant-card";
 
         const restaurantName = document.createElement("h3");
-        restaurantName.className = "saved-hotel-name";
+        restaurantName.className = "saved-restaurant-name";
         restaurantName.textContent = restaurant.properties.name;
 
         const address = document.createElement("p");
+        address.className = "saved-restaurant-address";
         address.textContent = restaurant.properties.address_line2 || "Address unavailable";
 
         card.append(restaurantName, address);
@@ -263,7 +264,6 @@ tabs.forEach(tab => {
              // Display selected hotels
              let hotelSelection = getHotelSelection([]);
              hotelSelectionElement.replaceChildren();
-             hotelSelectionElement.textContent = "Hotel";
              formatHotel(hotelSelection, hotelSelectionElement);
 
              let hotelCost = 0;
@@ -274,8 +274,6 @@ tabs.forEach(tab => {
              }
 
              // Display selected restaurants
-             foodSelection.textContent = "Restaurants";
-             // renderRestaurants(getFoodSelection([]), foodSelection, []);
              renderSelectedRestaurants(getFoodSelection([]), foodSelection);
 
 

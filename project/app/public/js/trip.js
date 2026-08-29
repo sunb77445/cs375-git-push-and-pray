@@ -24,7 +24,7 @@ async function getTripDetails(){
 
     try {
         let response = await fetch(`/trips${trip_id}`)
-        let data = response.json();
+        let data = await response.json();
 
         dest.textContent = `Trip to ${data.details[0].dest}`;
         dates.textContent = `Planned Dates: ${new Date(data.details[0].from_date).toLocaleDateString()} to ${new Date(data.details[0].to_date).toLocaleDateString()}`;
@@ -107,7 +107,8 @@ function renderSavedRestaurants(restaurants, container) {
 async function displayMembers(){
     try {
         let response = await fetch(`/trips/${trip_id}/members`); 
-        let data = response.json();
+        let data = await response.json();
+        
         console.log(data);
         let members = data.members;
 
@@ -130,11 +131,13 @@ async function displayMembers(){
 
 
 
-/*// Loading page content
+// Loading page content
 window.addEventListener('load', async (event) => {
-   await displayMembers();
-   await getTripDetails();
-}); */
+    if(trip_id) {
+        await displayMembers();
+        await getTripDetails();
+    }
+}); 
 
 
 // Opening Add User Form

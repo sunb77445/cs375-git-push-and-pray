@@ -491,3 +491,24 @@ label {
     color: #4A6572;
     font-style: italic;
 }
+
+
+.saved-restaurant-card {
+    padding: 12px 16px;
+    background-color: white;
+    border: 1px solid #D9B99B;
+    border-radius: 10px;
+    color: #2C3A47;
+    margin: 10px 0;
+}
+
+.saved-restaurant-name {
+    margin: 0 0 6px 0;
+    color: #B84A62;
+}
+
+.saved-restaurant-address {
+    margin: 0 0 6px 0;
+    color: #4A6572;
+    font-size: 14px;
+}
