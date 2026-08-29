@@ -198,6 +198,8 @@ function renderSavedFlights(flights, container) {
             <h3 class="saved-hotel-name">${flight.route || ""}</h3>
             <p>${flight.airline || ""}</p>
             <p class="saved-hotel-price">$${flight.price}</p>
+            <p>${flight.departure_time || ""} → ${flight.arrival_time || ""}</p>
+            <p>${flight.duration || ""} · ${flight.stops === 0 ? "Nonstop" : flight.stops ? flight.stops + " stop(s)" : ""}</p>
         `;
 
         if (currentTripRole) {

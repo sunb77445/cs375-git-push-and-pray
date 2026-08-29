@@ -199,7 +199,7 @@ router.post("/api/flights/save", async (req, res) => {
         });
     }
 
-    const { tripId, route, airline, price } = req.body;
+    const { tripId, route, airline, price, departureTime, arrivalTime, duration, stops } = req.body;
 
     if (!tripId || !route) {
         return res.status(400).json({
@@ -219,8 +219,8 @@ router.post("/api/flights/save", async (req, res) => {
         }
 
         const [flight] = await sql`
-            INSERT INTO flights (trip_id, route, airline, price)
-            VALUES (${tripId}, ${route}, ${airline}, ${price})
+            INSERT INTO flights (trip_id, route, airline, price, departure_time, arrival_time, duration, stops)
+            VALUES (${tripId}, ${route}, ${airline}, ${price}, ${departureTime}, ${arrivalTime}, ${duration}, ${stops})
             RETURNING *
         `;
 
@@ -251,7 +251,7 @@ router.patch("/api/flights/:flight_id", async (req, res) => {
     }
 
     const flightId = req.params.flight_id;
-    const { route, airline, price } = req.body;
+    const { route, airline, price, departureTime, arrivalTime, duration, stops } = req.body;
 
     try {
         const [existing] = await sql`SELECT trip_id FROM flights WHERE id = ${flightId}`;
@@ -276,7 +276,11 @@ router.patch("/api/flights/:flight_id", async (req, res) => {
             UPDATE flights
             SET route = COALESCE(${route}, route),
                 airline = COALESCE(${airline}, airline),
-                price = COALESCE(${price}, price)
+                price = COALESCE(${price}, price),
+                departure_time = COALESCE(${departureTime}, departure_time),
+                arrival_time = COALESCE(${arrivalTime}, arrival_time),
+                duration = COALESCE(${duration}, duration),
+                stops = COALESCE(${stops}, stops)
             WHERE id = ${flightId}
             RETURNING *
         `;

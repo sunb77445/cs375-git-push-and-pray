@@ -64,7 +64,6 @@ router.get('/trips', async (req, res) => {
 });
 
 
-// retrieves info for a specific trip (creator or invited members only)
 router.get('/trips:trip_id', async (req, res) => {
     const id = req.params.trip_id;
 
@@ -104,7 +103,7 @@ router.get('/trips:trip_id', async (req, res) => {
 
         const flight = await
         sql`
-                SELECT id AS flight_id, route, airline, price
+                SELECT id AS flight_id, route, airline, price, departure_time, arrival_time, duration, stops
                 FROM flights
                 WHERE trip_id = ${id}
             `;
