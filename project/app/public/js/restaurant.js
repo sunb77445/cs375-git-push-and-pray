@@ -98,13 +98,13 @@ function renderRestaurants(data, element, savedList) {
             selectBtn.classList.add("selected-food");
         } 
         else {
-            selectBtn.textContent = "Select";
+            selectBtn.textContent = "Select restaurant";
             selectBtn.style.backgroundColor = "";
         }
 
 
         selectBtn.addEventListener("click", () => {
-            if (selectBtn.textContent === "Select") {
+            if (selectBtn.textContent === "Select restaurant") {
                 window.selectedRestaurants.push({
                     name: restaurantName,
                     address: fullAddress,
@@ -124,7 +124,7 @@ function renderRestaurants(data, element, savedList) {
                 );
 
                 savedDatabaseId = null;
-                selectBtn.textContent = "Select";
+                selectBtn.textContent = "Select restaurant";
                 selectBtn.style.backgroundColor = "";
                 selectBtn.classList.toggle("selected-food");
             }
