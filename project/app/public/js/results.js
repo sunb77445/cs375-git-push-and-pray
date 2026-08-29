@@ -67,6 +67,7 @@ async function getFlights(){
     let flightBody = await flightResponse.json();
     console.log(flightBody);
     renderResults(flightBody.flights, flightPage);
+
 }
 
 async function getFood(){
@@ -84,6 +85,7 @@ async function getFood(){
     selectedLon = Number(lon);
     let foodResponse = await fetch(`/restaurant?lat=${lat}&lon=${lon}&distance=1000`);
     let foodBody = await foodResponse.json();
+    foodData = foodBody;
 
     console.log(foodBody); 
     loadAndRenderRestaurants(foodBody.features, foodPage);
@@ -99,6 +101,18 @@ function getHotelSelection(list){
 
     return list;
 }
+
+function getFoodSelection(list){
+    const selectedButtons = document.getElementsByClassName("selected-food");
+
+    Array.from(selectedButtons).forEach(btn => {
+        const foodInfo = btn.parentElement;
+        list.push(foodData.features[foodInfo.id]);
+    });
+
+    return list;
+}
+
 
 async function saveTrip(userId){
 
@@ -184,6 +198,44 @@ async function saveTrip(userId){
 
 }
 
+function renderSelectedRestaurants(restaurants, container) {
+     container.innerHTML = "";
+
+    if (!restaurants || restaurants.length === 0) {
+        const emptyNote = document.createElement("p");
+        emptyNote.className = "empty-note";
+        emptyNote.textContent = "No restaurants selected yet.";
+        container.appendChild(emptyNote);
+        return;
+    }
+
+    restaurants.forEach(restaurant => {
+        const card = document.createElement("div");
+        card.className = "saved-restaurant-card";
+
+        const restaurantName = document.createElement("h3");
+        restaurantName.className = "saved-restaurant-name";
+        restaurantName.textContent = restaurant.properties.name;
+
+        const address = document.createElement("p");
+        address.className = "saved-restaurant-address";
+        address.textContent = restaurant.properties.address_line2 || "Address unavailable";
+
+        card.append(restaurantName, address);
+
+        if (restaurant.properties.website) {
+            const website = document.createElement("a");
+            website.href = restaurant.properties.website;
+            website.target = "_blank";
+            website.rel = "noopener noreferrer";
+            website.textContent = "Visit Website";
+            card.appendChild(website);
+        }
+
+        container.appendChild(card);
+    });
+}
+
 
 // Load hotels by default
 window.addEventListener('load', async (event) => {
@@ -215,6 +267,8 @@ tabs.forEach(tab => {
         if(page.id == "selected-results"){
              message.textContent = "Here's what you've selected!";
 
+
+             // Display selected hotels
              let hotelSelection = getHotelSelection([]);
              hotelSelectionElement.replaceChildren();
              formatHotel(hotelSelection, hotelSelectionElement);
@@ -226,7 +280,11 @@ tabs.forEach(tab => {
                  }
              }
 
-             // Render the selected flight 
+             // Display selected restaurants
+             renderSelectedRestaurants(getFoodSelection([]), foodSelection);
+
+
+             // Display selected flights
              flightSelection.replaceChildren();
              let flightCost = 0;
              if (typeof selectedFlight !== "undefined" && selectedFlight) {
@@ -241,8 +299,9 @@ tabs.forEach(tab => {
              } else {
                  flightSelection.textContent = "No flight selected";
              }
+             
 
-             // Render the selected restaurants.
+            /* // Render the selected restaurants.
              foodSelection.replaceChildren();
              if (window.selectedRestaurants.length === 0) {
                  foodSelection.textContent = "No restaurants selected";
@@ -271,6 +330,7 @@ tabs.forEach(tab => {
                      foodSelection.appendChild(restaurantElement);
                  });
              }
+             */
 
              let totalCost = hotelCost + flightCost;
              total.textContent = `Total Cost: $${totalCost}`;
@@ -281,34 +341,6 @@ tabs.forEach(tab => {
         }
 
     });
-});
-
-// Save the trip to the database
-const saveTripButton = document.getElementById("saveTripButton");
-
-saveTripButton.addEventListener("click", async function() {
-
-    const response = await fetch("/trips", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            name: `Trip to ${destCity}`,
-            dest: destCity,
-            fromDate: fromDate,
-            toDate: toDate,
-            flight: selectedFlight
-        })
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-        alert("Trip saved!");
-    } else {
-        alert(data.message || "Could not save trip.");
-    }
 });
 
 
@@ -333,7 +365,6 @@ save.addEventListener("click", async () => {
     } catch (error) {
         console.log(error);
     }
-
 
 
 });
