@@ -76,8 +76,9 @@ router.post("/api/hotels/session-save", (req, res) => {
 */
 
 
-// Save hotel to database
+// Save hotel to database (creator or invited member only)
 const sql = require("../config/db");
+const { getTripRole } = require("../config/tripAccess");
 
 router.post("/api/hotels/save", async (req, res) => {
     const { tripId, hotel, price, check_in, check_out, guests } = req.body;
@@ -89,8 +90,24 @@ router.post("/api/hotels/save", async (req, res) => {
         });
     }
 
+    if (!req.session.userId) {
+        return res.status(401).json({
+            success: false,
+            message: "You must be logged in."
+        });
+    }
+
     try {
-        await sql`
+        const role = await getTripRole(req.session.userId, tripId);
+
+        if (!role) {
+            return res.status(403).json({
+                success: false,
+                message: "You don't have access to this trip."
+            });
+        }
+
+        const [saved] = await sql`
             INSERT INTO hotels (
                 trip_id, 
                 name, 
@@ -108,11 +125,13 @@ router.post("/api/hotels/save", async (req, res) => {
                 ${guests}
                     
             )
+            RETURNING *
         `;
 
         res.json({
             success: true,
-            message: "Hotel saved to trip successfully!"
+            message: "Hotel saved to trip successfully!",
+            hotel: saved
         });
     } catch (error) {
         console.error("Error saving hotel:", error);
@@ -124,5 +143,108 @@ router.post("/api/hotels/save", async (req, res) => {
     }
 });
 
-module.exports = router;
 
+// Edit a hotel already saved to a trip (creator or invited member only)
+router.patch("/api/hotels/:hotel_id", async (req, res) => {
+    if (!req.session.userId) {
+        return res.status(401).json({
+            success: false,
+            message: "You must be logged in."
+        });
+    }
+
+    const hotelId = req.params.hotel_id;
+    const { name, price, check_in, check_out, guests } = req.body;
+
+    try {
+        const [existing] = await sql`SELECT trip_id FROM hotels WHERE id = ${hotelId}`;
+
+        if (!existing) {
+            return res.status(404).json({
+                success: false,
+                message: "Hotel not found."
+            });
+        }
+
+        const role = await getTripRole(req.session.userId, existing.trip_id);
+
+        if (!role) {
+            return res.status(403).json({
+                success: false,
+                message: "You don't have access to this trip."
+            });
+        }
+
+        const [updated] = await sql`
+            UPDATE hotels
+            SET name = COALESCE(${name}, name),
+                price = COALESCE(${price}, price),
+                check_in = COALESCE(${check_in}, check_in),
+                check_out = COALESCE(${check_out}, check_out),
+                guests = COALESCE(${guests}, guests)
+            WHERE id = ${hotelId}
+            RETURNING *
+        `;
+
+        res.json({
+            success: true,
+            hotel: updated
+        });
+
+    } catch (error) {
+        console.error("Error updating hotel:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to update hotel."
+        });
+    }
+});
+
+
+// Remove a hotel from a trip (creator or invited member only)
+router.delete("/api/hotels/:hotel_id", async (req, res) => {
+    if (!req.session.userId) {
+        return res.status(401).json({
+            success: false,
+            message: "You must be logged in."
+        });
+    }
+
+    const hotelId = req.params.hotel_id;
+
+    try {
+        const [existing] = await sql`SELECT trip_id FROM hotels WHERE id = ${hotelId}`;
+
+        if (!existing) {
+            return res.status(404).json({
+                success: false,
+                message: "Hotel not found."
+            });
+        }
+
+        const role = await getTripRole(req.session.userId, existing.trip_id);
+
+        if (!role) {
+            return res.status(403).json({
+                success: false,
+                message: "You don't have access to this trip."
+            });
+        }
+
+        await sql`DELETE FROM hotels WHERE id = ${hotelId}`;
+
+        res.json({
+            success: true,
+            message: "Hotel removed."
+        });
+
+    } catch (error) {
+        console.error("Error deleting hotel:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to delete hotel."
+        });
+    }
+});
+
+module.exports = router;

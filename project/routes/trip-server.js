@@ -1,5 +1,6 @@
 const express = require("express");
 const sql = require("../config/db");
+const { getTripRole } = require("../config/tripAccess");
 const router = express.Router(); 
 
 
@@ -63,34 +64,57 @@ router.get('/trips', async (req, res) => {
 });
 
 
-// retrieves info for a specific trip
+// retrieves info for a specific trip (creator or invited members only)
 router.get('/trips:trip_id', async (req, res) => {
     const id = req.params.trip_id;
 
-    const details =  await 
-    sql`
-            SELECT trip_id, user_id, name, dest, from_date, to_date
-            FROM trips
-            WHERE trip_id = ${id}
-        `;
+    try {
+        if (!req.session.userId) {
+            return res.status(401).json({ success: false, message: "You must be logged in." });
+        }
 
-    const hotel = await
+        const role = await getTripRole(req.session.userId, id);
 
-    sql`
-            SELECT id AS hotel_id, name, price, check_in, check_out, guests
-            FROM hotels
-            WHERE trip_id = ${id}
-        `;
+        if (!role) {
+            return res.status(403).json({ success: false, message: "You don't have access to this trip." });
+        }
 
-    const restaurant = await
+        const details = await
+        sql`
+                SELECT trip_id, user_id, name, dest, from_date, to_date
+                FROM trips
+                WHERE trip_id = ${id}
+            `;
 
-    sql`
-            SELECT id AS restaurant_id, name, address, website, distance
-            FROM restaurants
-            WHERE trip_id = ${id}
-        `;
+        const hotel = await
 
-    res.json({details, hotel, restaurant});
+        sql`
+                SELECT id AS hotel_id, name, price, check_in, check_out, guests
+                FROM hotels
+                WHERE trip_id = ${id}
+            `;
+
+        const restaurant = await
+
+        sql`
+                SELECT id AS restaurant_id, name, address, website, distance
+                FROM restaurants
+                WHERE trip_id = ${id}
+            `;
+
+        const flight = await
+        sql`
+                SELECT id AS flight_id, route, airline, price
+                FROM flights
+                WHERE trip_id = ${id}
+            `;
+
+        res.json({details, hotel, restaurant, flight, role});
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Failed to fetch trip." });
+    }
 });
 
 
@@ -111,6 +135,15 @@ router.post('/trips/:trip_id/members', async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: "You cannot add yourself"
+            });
+        }
+
+        const requesterRole = await getTripRole(req.session.userId, tripId);
+
+        if (!requesterRole) {
+            return res.status(403).json({
+                success: false,
+                message: "You don't have access to this trip"
             });
         }
 

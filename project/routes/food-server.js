@@ -1,6 +1,7 @@
 let axios = require("axios");
 let express = require("express");
 const sql = require("../config/db");
+const { getTripRole } = require("../config/tripAccess");
 
 
 let apiFile = require("../env.json");
@@ -105,7 +106,7 @@ router.get("/restaurant", (req, res) => {
 });
 
 
-router.post("/save-restaurant", (req, res) => {
+router.post("/save-restaurant", async (req, res) => {
 
 
   const { tripId, name, address, website, distance } = req.body;
@@ -117,42 +118,129 @@ router.post("/save-restaurant", (req, res) => {
     });
   }
 
-  sql`
-      INSERT INTO restaurants (trip_id, name, address, website, distance)
-      VALUES (${tripId}, ${name}, ${address}, ${website}, ${distance})
-      RETURNING id
-  `
-    .then(result => {
-      res.json({ success: true, message: "Restaurant saved!", id: result[0].id });
-    })
-    .catch(error => {
-      console.error(error);
-      res.status(500).json({ success: false, message: "Failed to save restaurant" });
+  if (!req.session.userId) {
+    return res.status(401).json({
+      success: false,
+      message: "You must be logged in"
     });
+  }
+
+  try {
+    const role = await getTripRole(req.session.userId, tripId);
+
+    if (!role) {
+      return res.status(403).json({
+        success: false,
+        message: "You don't have access to this trip"
+      });
+    }
+
+    const result = await sql`
+        INSERT INTO restaurants (trip_id, name, address, website, distance)
+        VALUES (${tripId}, ${name}, ${address}, ${website}, ${distance})
+        RETURNING id
+    `;
+
+    res.json({ success: true, message: "Restaurant saved!", id: result[0].id });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Failed to save restaurant" });
+  }
 });
 
 
-router.delete("/remove-restaurant/:id", (req, res) => {
+// Edit a restaurant already saved to a trip (creator or invited member only)
+router.patch("/restaurant/:id", async (req, res) => {
+
+  if (!req.session.userId) {
+    return res.status(401).json({
+      success: false,
+      message: "You must be logged in"
+    });
+  }
+
+  const restaurantId = req.params.id;
+  const { name, address, website, distance } = req.body;
+
+  try {
+    const [existing] = await sql`SELECT trip_id FROM restaurants WHERE id = ${restaurantId}`;
+
+    if (!existing) {
+      return res.status(404).json({ success: false, message: "Restaurant not found" });
+    }
+
+    const role = await getTripRole(req.session.userId, existing.trip_id);
+
+    if (!role) {
+      return res.status(403).json({
+        success: false,
+        message: "You don't have access to this trip"
+      });
+    }
+
+    const [updated] = await sql`
+        UPDATE restaurants
+        SET name = COALESCE(${name}, name),
+            address = COALESCE(${address}, address),
+            website = COALESCE(${website}, website),
+            distance = COALESCE(${distance}, distance)
+        WHERE id = ${restaurantId}
+        RETURNING *
+    `;
+
+    res.json({ success: true, restaurant: updated });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Failed to update restaurant" });
+  }
+});
+
+
+router.delete("/remove-restaurant/:id", async (req, res) => {
 
 
   const restaurantId = req.params.id;
 
-
-  sql`
-        DELETE FROM restaurants
-        WHERE id = ${restaurantId}
-        RETURNING id
-    `
-    .then(result => {
-      if (result.length === 0) {
-        return res.status(404).json({ success: false, message: "Restaurant not found" });
-      }
-      res.json({ success: true, message: "Restaurant removed!" });
-    })
-    .catch(error => {
-      console.error(error);
-      res.status(500).json({ success: false, message: "Failed to remove restaurant" });
+  if (!req.session.userId) {
+    return res.status(401).json({
+      success: false,
+      message: "You must be logged in"
     });
+  }
+
+  try {
+    const [existing] = await sql`SELECT trip_id FROM restaurants WHERE id = ${restaurantId}`;
+
+    if (!existing) {
+      return res.status(404).json({ success: false, message: "Restaurant not found" });
+    }
+
+    const role = await getTripRole(req.session.userId, existing.trip_id);
+
+    if (!role) {
+      return res.status(403).json({
+        success: false,
+        message: "You don't have access to this trip"
+      });
+    }
+
+    const result = await sql`
+          DELETE FROM restaurants
+          WHERE id = ${restaurantId}
+          RETURNING id
+      `;
+
+    if (result.length === 0) {
+      return res.status(404).json({ success: false, message: "Restaurant not found" });
+    }
+    res.json({ success: true, message: "Restaurant removed!" });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Failed to remove restaurant" });
+  }
 });
 
 
@@ -176,5 +264,3 @@ router.get("/saved-restaurants/:tripId", (req, res) => {
 
 
 module.exports = router;
-
-
