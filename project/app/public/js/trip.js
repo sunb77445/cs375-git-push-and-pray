@@ -121,19 +121,25 @@ async function displayMembers(){
 
         if(members.length == 0){
             let p = document.createElement("p");
-            p.textContent = "Add a friend to your trip to start collaborating!"
+            p.textContent = "Add a friend to your trip to start collaborating!";
             membersList.append(p);
         }
 
         members.forEach(member => {
             let li = document.createElement("li");
-            li.textContent = `👤 ${member.first_name} ${member.last_name} (${member.username})`;
+            li.textContent =
+                `👤 ${member.first_name} ${member.last_name} (${member.username})`;
+
+            if (member.is_creator) {
+                li.textContent += " — Creator";
+                creator.textContent =
+                    `Created By: ${member.first_name} ${member.last_name} (${member.username})`;
+            }
             membersList.append(li);
         });
     } catch (error) {
         console.log(error);
     }
-
 }
 
 
