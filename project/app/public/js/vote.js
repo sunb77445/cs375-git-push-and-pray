@@ -1,57 +1,65 @@
 const proposeVoteButton = document.getElementById("propose-vote-button");
 const voteDialog = document.getElementById("vote-dialog");
-const voteExit = document.getElementById("vote-exit");
+const voteEndButton = document.getElementById("vote-end-button");
 const voteOptions = document.getElementById("vote-options");
 const voteStatus = document.getElementById("vote-status");
 
 let voteSocket = null;
 let myVote = null;
 let tripHotels = [];
+let latestTally = {};
+let sessionActive = false;
+let currentUserId = null;
 
-async function openVoteDialog() {
-    voteStatus.textContent = "Loading...";
-    voteOptions.innerHTML = "";
-    myVote = null;
-    voteDialog.showModal();
-
+// Connect as soon as the trip page loads, so every member's button reflects live session status even before they open the dialog
+async function initVoting() {
     try {
         const userResponse = await fetch("/current-user");
         const userData = await userResponse.json();
 
-        const tripResponse = await fetch(`/trips${tripId}`);
+        if (!userData.loggedIn) return;
+
+        currentUserId = userData.user.id;
+
+        const tripResponse = await fetch(`/trips${trip_id}`);
         const tripData = await tripResponse.json();
         tripHotels = tripData.hotel || [];
 
-        if (tripHotels.length === 0) {
-            voteStatus.textContent = "No hotels have been added to this trip yet.";
-            return;
-        }
-
-        connectVoteSocket(userData.user.id);
+        connectVoteSocket();
 
     } catch (error) {
-        console.log(error);
-        voteStatus.textContent = "Could not load voting options.";
+        console.log("Could not initialize voting:", error);
     }
 }
 
 //adding websocket for getting client "online"
-function connectVoteSocket(userId) {
+function connectVoteSocket() {
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     voteSocket = new WebSocket(`${protocol}//${window.location.host}`);
 
     voteSocket.addEventListener("open", () => {
         voteSocket.send(
-            JSON.stringify({ type: "join", tripId, userId}
+            JSON.stringify({ type: "join", tripId: trip_id, userId: currentUserId }
             ));
-        voteStatus.textContent = "Live voting is on! Click a hotel to vote!";
     });
 
     voteSocket.addEventListener("message", (event) => {
         const data = JSON.parse(event.data);
 
+        if (data.type === "status") {
+            setSessionActive(data.active);
+        }
+
         if (data.type === "state") {
-            renderVoteOptions(data.tally);
+            latestTally = data.tally;
+
+            if (voteDialog.open) {
+                renderVoteOptions(latestTally);
+            }
+        }
+
+        if (data.type === "ended") {
+            handleVoteEnded(data);
         }
 
         if (data.type === "error") {
@@ -62,6 +70,22 @@ function connectVoteSocket(userId) {
     voteSocket.addEventListener("close", () => {
         voteSocket = null;
     });
+}
+
+function setSessionActive(active) {
+    sessionActive = active;
+
+    if (active) {
+        proposeVoteButton.textContent = "Join Live Voting";
+        proposeVoteButton.classList.add("voting-live");
+
+        if (voteDialog.open) {
+            voteStatus.textContent = "Live voting is on! Click a hotel to vote!";
+        }
+    } else {
+        proposeVoteButton.textContent = "Propose Vote";
+        proposeVoteButton.classList.remove("voting-live");
+    }
 }
 
 function renderVoteOptions(tally) {
@@ -96,11 +120,79 @@ function renderVoteOptions(tally) {
     });
 }
 
-proposeVoteButton.addEventListener("click", openVoteDialog);
+function handleVoteEnded(data) {
+    setSessionActive(false);
 
-voteExit.addEventListener("click", () => {
-    if (voteSocket) {
-        voteSocket.close();
+    if (data.outcome === "tie") {
+        voteStatus.textContent = "";
+        voteOptions.innerHTML = `
+            <p class="vote-outcome">There's a tie! Voting has ended - nothing has changed.</p>
+            <button id="vote-outcome-ok">OK</button>
+        `;
+
+        document.getElementById("vote-outcome-ok").addEventListener("click", () => {
+            voteDialog.close();
+        });
+
+        return;
     }
-    voteDialog.close();
+
+    if (data.outcome === "winner") {
+        const hotel = tripHotels.find(h => String(h.hotel_id) === String(data.hotelId));
+        const hotelName = hotel ? hotel.name : "this hotel";
+
+        voteStatus.textContent = "";
+        voteOptions.innerHTML = `
+            <p class="vote-outcome">Do you want to finalize <strong>${hotelName}</strong> for this trip?</p>
+            <div class="vote-outcome-actions">
+                <button id="vote-finalize-yes">Yes</button>
+                <button id="vote-finalize-no">No</button>
+            </div>
+        `;
+
+        document.getElementById("vote-finalize-no").addEventListener("click", () => {
+            voteDialog.close();
+        });
+
+        document.getElementById("vote-finalize-yes").addEventListener("click", async () => {
+            try {
+                await fetch(`/trips/${trip_id}/hotels/${data.hotelId}/finalize`, {
+                    method: "POST"
+                });
+            } catch (error) {
+                console.log("Could not finalize hotel:", error);
+            }
+
+            window.location.reload();
+        });
+    }
+}
+
+proposeVoteButton.addEventListener("click", () => {
+    if (tripHotels.length === 0) {
+        voteStatus.textContent = "No hotels have been added to this trip yet.";
+        voteOptions.innerHTML = "";
+        voteDialog.showModal();
+        return;
+    }
+
+    myVote = null;
+    voteStatus.textContent = sessionActive
+        ? "Live voting is on! Click a hotel to vote!"
+        : "Starting live voting...";
+
+    renderVoteOptions(latestTally);
+    voteDialog.showModal();
+
+    if (!sessionActive && voteSocket && voteSocket.readyState === WebSocket.OPEN) {
+        voteSocket.send(JSON.stringify({ type: "start" }));
+    }
 });
+
+voteEndButton.addEventListener("click", () => {
+    if (voteSocket && voteSocket.readyState === WebSocket.OPEN) {
+        voteSocket.send(JSON.stringify({ type: "end" }));
+    }
+});
+
+initVoting();

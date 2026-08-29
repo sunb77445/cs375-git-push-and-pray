@@ -11,12 +11,12 @@ async function isTripMember(tripId, userId) {
     return rows.length > 0;
 }
 
-// tripId =>>> { clients: Set<ws>, votes: Map<userId, hotelId> }
+// tripId =>>> { clients: Set<ws>, votes: Map<userId, hotelId>, active: boolean }
 const votingSessions = new Map();
 
 function getVotingSession(tripId) {
     if (!votingSessions.has(tripId)) {
-        votingSessions.set(tripId, { clients: new Set(), votes: new Map() });
+        votingSessions.set(tripId, { clients: new Set(), votes: new Map(), active: false });
     }
     return votingSessions.get(tripId);
 }
@@ -30,22 +30,31 @@ function tallyVotes(votingSession) {
     return tally;
 }
 
+// sends a message to every connected client on a trip's voting session
+function broadcast(tripId, messageObj) {
+    const votingSession = votingSessions.get(tripId);
+
+    if (!votingSession)
+        return;
+
+    const message = JSON.stringify(messageObj);
+
+    votingSession.clients.forEach(client => {
+        if (client.readyState === client.OPEN) {
+            client.send(message);
+        }
+    });
+}
+
 function broadcastState(tripId) {
     const votingSession = votingSessions.get(tripId);
 
     if (!votingSession)
         return;
 
-    const message = JSON.stringify({
+    broadcast(tripId, {
         type: "state",
         tally: tallyVotes(votingSession)
-    });
-
-    //each client gets in live
-    votingSession.clients.forEach(client => {
-        if (client.readyState === client.OPEN) {
-            client.send(message);
-        }
     });
 }
 
@@ -91,6 +100,12 @@ function runVotingServer(server) {
                 const votingSession = getVotingSession(tripId);
                 votingSession.clients.add(ws);
 
+                // let the newly joined client know if a session is already live and what the current tally looks like
+                ws.send(JSON.stringify({
+                    type: "status",
+                    active: votingSession.active
+                }));
+
                 ws.send(JSON.stringify({
                     type: "state",
                     tally: tallyVotes(votingSession)
@@ -99,13 +114,62 @@ function runVotingServer(server) {
                 return;
             }
 
+            if (data.type === "start") {
+                if (!ws.tripId) return;
+
+                const votingSession = getVotingSession(ws.tripId);
+
+                if (!votingSession.active) {
+                    votingSession.active = true;
+                    broadcast(ws.tripId, { type: "status", active: true });
+                }
+
+                return;
+            }
+
             if (data.type === "vote") {
                 if (!ws.tripId || !ws.userId) return;
 
                 const votingSession = getVotingSession(ws.tripId);
+
+                if (!votingSession.active) return;
+
                 votingSession.votes.set(ws.userId, data.hotelId);
 
                 broadcastState(ws.tripId);
+
+                return;
+            }
+
+            if (data.type === "end") {
+                if (!ws.tripId) return;
+
+                const votingSession = getVotingSession(ws.tripId);
+                const tally = tallyVotes(votingSession);
+                const entries = Object.entries(tally);
+
+                let outcome;
+
+                if (entries.length === 0) {
+                    //case if nobody voted or tie happens
+                    outcome = { type: "ended", outcome: "tie" };
+                } else {
+                    entries.sort((a, b) => b[1] - a[1]);
+
+                    const topCount = entries[0][1];
+                    const winners = entries.filter(([, count]) => count === topCount);
+
+                    outcome = winners.length > 1
+                        ? { type: "ended", outcome: "tie" }
+                        : { type: "ended", outcome: "winner", hotelId: winners[0][0], votes: topCount };
+                }
+
+                votingSession.votes.clear();
+                votingSession.active = false;
+
+                broadcast(ws.tripId, outcome);
+
+                return;
             }
         });
 
@@ -114,7 +178,7 @@ function runVotingServer(server) {
                 const votingSession = votingSessions.get(ws.tripId);
                 votingSession.clients.delete(ws);
 
-                if (votingSession.clients.size === 0 && votingSession.votes.size === 0) {
+                if (votingSession.clients.size === 0 && votingSession.votes.size === 0 && !votingSession.active) {
                     votingSessions.delete(ws.tripId);
                 }
             }
