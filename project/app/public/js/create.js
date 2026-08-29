@@ -8,6 +8,7 @@ let loadingScreen = document.querySelector(".loading");
 let sliders = document.querySelectorAll(".slider");
 let cityInput = document.getElementById("city");
 let citySuggestions = document.getElementById("city-suggestions");
+let tripNameInput = document.getElementById("tripName");
 let selectedDestLat = null;
 let selectedDestLon = null;
 
@@ -125,6 +126,8 @@ function updateSliders(event){
 async function onSubmit(){
    
    // Trip Info 
+   let tripName = document.getElementById("tripName").value;
+
    let destCity = document.getElementById("city").value;
    let destState = document.getElementById("state").value;
    let destCountry = document.getElementById("country").value;
@@ -152,6 +155,7 @@ async function onSubmit(){
    console.log(`Flight Budget: ${flightBudget}`);
 
    const params = new URLSearchParams({
+      tripName: tripName,
       destCity: destCity,
       destState: destState,
       destCountry: destCountry,
@@ -178,7 +182,3 @@ async function onSubmit(){
 
 // Event Listeners
 submit.addEventListener("click", onSubmit);
-
-
-
-
