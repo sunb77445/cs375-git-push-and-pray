@@ -90,7 +90,16 @@ router.get('/trips:trip_id', async (req, res) => {
             WHERE trip_id = ${id}
         `;
 
-    res.json({details, hotel, restaurant});
+    const flight = await
+
+    sql`
+            SELECT id AS flight_id, route, airline, price, departure_time, arrival_time, duration, stops
+            FROM flights
+            WHERE trip_id = ${id}
+        `;
+
+    res.json({details, hotel, restaurant, flight});
+
 });
 
 

@@ -163,8 +163,13 @@ async function saveTrip(userId){
                     tripId: tripId,
                     route: selectedFlight.route,
                     airline: selectedFlight.meta,
-                    price: selectedFlight.price
+                    price: selectedFlight.price,
+                    departureTime: selectedFlight.departureTime,
+                    arrivalTime: selectedFlight.arrivalTime,
+                    duration: selectedFlight.duration,
+                    stops: selectedFlight.stops
                 })
+                
             });
         }
     } catch (error) {
@@ -247,6 +252,7 @@ tabs.forEach(tab => {
                  flightEl.innerHTML = `
                     <h2>${selectedFlight.route}</h2>
                     <p>${selectedFlight.meta || ""}</p>
+                    <p>${selectedFlight.departureTime || ""} → ${selectedFlight.arrivalTime || ""}</p>
                     <p>Price: $${selectedFlight.price}</p>
                  `;
                  flightSelection.appendChild(flightEl);

@@ -190,7 +190,7 @@ router.post(
 const sql = require("../config/db");
 
 router.post("/api/flights/save", async (req, res) => {
-    const { tripId, route, airline, price } = req.body;
+    const { tripId, route, airline, price, departureTime, arrivalTime, duration, stops } = req.body;
 
     if (!tripId || !route) {
         return res.status(400).json({
@@ -201,8 +201,8 @@ router.post("/api/flights/save", async (req, res) => {
 
     try {
         const [flight] = await sql`
-            INSERT INTO flights (trip_id, route, airline, price)
-            VALUES (${tripId}, ${route}, ${airline}, ${price})
+            INSERT INTO flights (trip_id, route, airline, price, departure_time, arrival_time, duration, stops)
+            VALUES (${tripId}, ${route}, ${airline}, ${price}, ${departureTime}, ${arrivalTime}, ${duration}, ${stops})
             RETURNING *
         `;
 

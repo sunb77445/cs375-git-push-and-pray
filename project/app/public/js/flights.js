@@ -87,6 +87,7 @@
                     <p>
                         <strong>${flight.route}</strong><br>
                         ${flight.meta}<br>
+                        ${flight.departureTime || ""} → ${flight.arrivalTime || ""}<br>
                         $${flight.price}
                         <button class="add-btn">Add to itinerary</button>
                     </p>
