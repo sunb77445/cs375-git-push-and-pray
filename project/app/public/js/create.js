@@ -40,17 +40,23 @@ inputs.forEach(input => {
 
 checkInputs();
 
-// Autocomplete the destination and fill in its location details.
+
+let currentSearch = "";
+
 cityInput.addEventListener("input", () => {
    const text = cityInput.value.trim();
+   
+   currentSearch = text; 
+   
    selectedDestLat = null;
    selectedDestLon = null;
+   
    citySuggestions.replaceChildren();
 
    if (text.length < 2) {
       return;
    }
-
+   
    fetch(`/autocomplete?text=${encodeURIComponent(text)}`)
       .then(response => {
          if (!response.ok) {
@@ -59,12 +65,20 @@ cityInput.addEventListener("input", () => {
          return response.json();
       })
       .then(data => {
+
+         if (text !== currentSearch) {
+             return; 
+         }
+
+
+         citySuggestions.replaceChildren();
+
          const places = data.features || [];
          if (places.length === 0) {
             return;
          }
-
-         places.forEach(place => {
+         
+         places.slice(0, 3).forEach(place => {
             let option = document.createElement("div");
 
             const properties = place.properties || {};
@@ -72,18 +86,22 @@ cityInput.addEventListener("input", () => {
             const coordinates = place.geometry && place.geometry.coordinates;
 
             if (!coordinates || coordinates.length < 2) {
-               return;
+               return; 
             }
 
             option.textContent = formatted;
+
             option.addEventListener("click", () => {
                cityInput.value = properties.city || properties.town ||
                   properties.village || properties.municipality ||
                   properties.name || formatted;
+
                document.getElementById("state").value = properties.state || "";
                document.getElementById("country").value = properties.country || "";
+
                selectedDestLon = coordinates[0];
                selectedDestLat = coordinates[1];
+
                citySuggestions.replaceChildren();
                checkInputs();
             });

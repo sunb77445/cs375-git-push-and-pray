@@ -90,9 +90,10 @@ function renderRestaurants(data, element, savedList) {
 
 
         if (savedDatabaseId) {
-            selectBtn.textContent = "Deselect";
-            selectBtn.style.backgroundColor = "red";
-        } else {
+            selectBtn.textContent = "Selected";
+            selectBtn.style.backgroundColor = "#2c3a47";
+        } 
+        else {
             selectBtn.textContent = "Select";
             selectBtn.style.backgroundColor = "";
         }
@@ -107,8 +108,8 @@ function renderRestaurants(data, element, savedList) {
                     distance: calculatedMiles
                 });
 
-                selectBtn.textContent = "Deselect";
-                selectBtn.style.backgroundColor = "red";
+                selectBtn.textContent = "Selected";
+                selectBtn.style.backgroundColor = "#2c3a47";
 
 
             } else {
@@ -159,67 +160,6 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
     return R * c;
 }
 
-
-// AUTOCOMPLETE
-locationInput.addEventListener("input", () => {
-    let text = locationInput.value;
-
-
-    selectedLat = null;
-    selectedLon = null;
-
-
-    suggestions.replaceChildren();
-
-
-    if (text.length < 2) {
-        return;
-    }
-
-
-    fetch(`/autocomplete?text=${text}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Autocomplete failed");
-            }
-            return response.json();
-        })
-        .then(data => {
-            const places = data.features || [];
-
-
-            if (places.length === 0) {
-                return;
-            }
-
-
-            places.forEach(place => {
-                let option = document.createElement("div");
-
-
-                const formatted = place.properties.formatted || "Unknown location";
-                const lat = place.geometry.coordinates[1];
-                const lon = place.geometry.coordinates[0];
-
-
-                option.textContent = formatted;
-
-
-                option.addEventListener("click", () => {
-                    locationInput.value = formatted;
-                    selectedLat = lat;
-                    selectedLon = lon;
-                    suggestions.replaceChildren();
-                });
-
-
-                suggestions.appendChild(option);
-            });
-        })
-        .catch(err => {
-            console.log(err);
-        });
-});
 
 
 // find restaurants
