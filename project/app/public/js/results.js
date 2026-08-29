@@ -301,37 +301,6 @@ tabs.forEach(tab => {
              }
              
 
-            /* // Render the selected restaurants.
-             foodSelection.replaceChildren();
-             if (window.selectedRestaurants.length === 0) {
-                 foodSelection.textContent = "No restaurants selected";
-             } else {
-                 window.selectedRestaurants.forEach(restaurant => {
-                     const restaurantElement = document.createElement("div");
-                     restaurantElement.className = "restaurant-card";
-                     const restaurantInfo = document.createElement("div");
-                     restaurantInfo.className = "restaurant-info";
-                     const restaurantName = document.createElement("h2");
-                     const restaurantAddress = document.createElement("p");
-
-                     restaurantName.textContent = restaurant.name;
-                     restaurantAddress.textContent = restaurant.address || "Address unavailable";
-                     restaurantInfo.appendChild(restaurantName);
-                     restaurantInfo.appendChild(restaurantAddress);
-
-                     if (restaurant.website) {
-                         const websiteLink = document.createElement("a");
-                         websiteLink.href = restaurant.website;
-                         websiteLink.textContent = "Visit Website";
-                         restaurantInfo.appendChild(websiteLink);
-                     }
-
-                     restaurantElement.appendChild(restaurantInfo);
-                     foodSelection.appendChild(restaurantElement);
-                 });
-             }
-             */
-
              let totalCost = hotelCost + flightCost;
              total.textContent = `Total Cost: $${totalCost}`;
              alloc.textContent = `You've used ${((totalCost / totalBudget) * 100).toFixed(1)}% of your budget!`

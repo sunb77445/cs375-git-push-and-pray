@@ -23,13 +23,12 @@ function renderRestaurants(data, element, savedList) {
     let i = 0;
 
 
-
     data.forEach(place => {
         let restaurant = document.createElement("div");
         restaurant.className = "restaurant-card";
         let restaurantInfo = document.createElement("div");
         restaurantInfo.className = "restaurant-info";
-        restaurant.id = i;
+        restaurantInfo.id = i;
         i++;
         
 
@@ -86,7 +85,6 @@ function renderRestaurants(data, element, savedList) {
                 }
             }
         }
-
 
         // Select Button & State
         let selectBtn = document.createElement("button");
