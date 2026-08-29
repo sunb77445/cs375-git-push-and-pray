@@ -251,7 +251,7 @@ router.patch("/api/flights/:flight_id", async (req, res) => {
     }
 
     const flightId = req.params.flight_id;
-    const { route, airline, price, departureTime, arrivalTime, duration, stops } = req.body;
+    const { route, airline, price, departureTime = null, arrivalTime = null, duration = null, stops = null } = req.body;
 
     try {
         const [existing] = await sql`SELECT trip_id FROM flights WHERE id = ${flightId}`;

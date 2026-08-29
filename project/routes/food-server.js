@@ -109,7 +109,7 @@ router.get("/restaurant", (req, res) => {
 router.post("/save-restaurant", async (req, res) => {
 
 
-  const { tripId, name, address, website, distance } = req.body;
+  const { tripId, name, address, website, distance = null } = req.body;
 
   if (!tripId || !name || !address) {
     return res.status(400).json({

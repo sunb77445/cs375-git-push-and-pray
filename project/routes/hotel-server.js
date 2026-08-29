@@ -81,7 +81,7 @@ const sql = require("../config/db");
 const { getTripRole } = require("../config/tripAccess");
 
 router.post("/api/hotels/save", async (req, res) => {
-    const { tripId, hotel, price, check_in, check_out, guests } = req.body;
+    const { tripId, hotel, price, check_in = null, check_out = null, guests = null } = req.body;
 
     if (!tripId || !hotel) {
         return res.status(400).json({
