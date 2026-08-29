@@ -88,8 +88,8 @@
                         <strong>${flight.route}</strong><br>
                         ${flight.meta}<br>
                         $${flight.price}
-                        <button class="add-btn">Select flight</button>
                     </p>
+                    <button class="add-btn">Select flight</button>
                     <hr>
                 `;
 
