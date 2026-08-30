@@ -535,3 +535,18 @@ label {
     color: #4A6572;
     font-style: italic;
 }
+
+.saved-hotel-card button {
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
+.saved-hotel-card button:last-child {
+    margin-right: 0;
+}
+
+.saved-hotel-link {
+    display: inline-block;
+    margin-top: 10px;
+    margin-right: 10px;
+}

@@ -639,6 +639,7 @@ function renderSavedRestaurants(restaurants, container) {
             website.target = "_blank";
             website.rel = "noopener noreferrer";
             website.textContent = "Visit Website";
+            website.className = "saved-hotel-link";
             card.appendChild(website);
         }
 
