@@ -161,7 +161,7 @@ router.patch("/restaurant/:id", async (req, res) => {
   }
 
   const restaurantId = req.params.id;
-  const { name, address, website, distance } = req.body;
+  const { name, address, website, distance = null } = req.body;
 
   try {
     const [existing] = await sql`SELECT trip_id FROM restaurants WHERE id = ${restaurantId}`;

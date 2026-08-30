@@ -154,8 +154,7 @@ router.patch("/api/hotels/:hotel_id", async (req, res) => {
     }
 
     const hotelId = req.params.hotel_id;
-    const { name, price, check_in, check_out, guests } = req.body;
-
+    const { name, price, check_in = null, check_out = null, guests } = req.body;
     try {
         const [existing] = await sql`SELECT trip_id FROM hotels WHERE id = ${hotelId}`;
 

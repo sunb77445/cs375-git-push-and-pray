@@ -199,8 +199,8 @@ router.post("/api/flights/save", async (req, res) => {
         });
     }
 
-    const { tripId, route, airline, price, departureTime, arrivalTime, duration, stops } = req.body;
-
+    const { tripId, route, airline, price, departureTime = null, arrivalTime = null, duration = null, stops = null } = req.body;
+    
     if (!tripId || !route) {
         return res.status(400).json({
             success: false,
