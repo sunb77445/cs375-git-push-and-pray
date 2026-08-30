@@ -1,4 +1,3 @@
-
 // Page Components
 let hotelPage = document.getElementById("hotels-results");
 let flightPage = document.getElementById("flights-results");
@@ -34,6 +33,13 @@ let hotelBudget = params.get("hotelBudget");
 let flightBudget = params.get("flightBudget");
 let attractionsBudget = params.get("attractionsBudget");
 let tripName = params.get("tripName");
+
+// Present when we arrived here from the "Edit" flow on an already-saved
+// trip (trip.js's browseFlightsForEdit). editTripId is always set in that
+// case; editFlightId is only set when replacing a specific existing flight
+// rather than adding a brand new one.
+let editTripId = params.get("editTripId");
+let editFlightId = params.get("editFlightId");
 
 
 // response data
@@ -175,6 +181,30 @@ async function saveTrip(userId){
         console.log("Error saving hotel:", error.message);
     }
 
+    // Save selected flight to the newly created trip
+    try {
+        if (typeof selectedFlight !== "undefined" && selectedFlight) {
+            await fetch("/api/flights/save", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    tripId: tripId,
+                    route: selectedFlight.route,
+                    airline: selectedFlight.meta,
+                    price: selectedFlight.price,
+                    departureTime: selectedFlight.departureTime,
+                    arrivalTime: selectedFlight.arrivalTime,
+                    duration: selectedFlight.duration,
+                    stops: selectedFlight.stops
+                })
+            });
+        }
+    } catch (error) {
+        console.log("Error saving flight:", error.message);
+    }
+
     // Save selected restaurants to the newly created trip
     try {
         for (const restaurant of window.selectedRestaurants) {
@@ -239,12 +269,69 @@ function renderSelectedRestaurants(restaurants, container) {
 
 // Load hotels by default
 window.addEventListener('load', async (event) => {
-   await getHotels();
-   await getFlights();
-   await getFood();
+   try { await getHotels(); } catch (error) { console.log("Error loading hotels:", error.message); }
+   try { await getFlights(); } catch (error) { console.log("Error loading flights:", error.message); }
+   try { await getFood(); } catch (error) { console.log("Error loading food:", error.message); }
    loadingScreen.style.display = 'none';
+
+   if (editTripId) {
+       setupEditModeBanner();
+       document.getElementById("flights").click();
+   }
 });
 
+// When arriving here in "edit mode" (see trip.js's browseFlightsForEdit),
+// shows a banner on the Flights tab so the user can pick a flight and save
+// it straight back into their existing trip instead of creating a new one.
+function setupEditModeBanner() {
+    const banner = document.createElement("div");
+    banner.id = "edit-mode-banner";
+    banner.innerHTML = `
+        <p>Pick a flight below, then confirm to save it to your trip.</p>
+        <button id="confirm-edit-flight-btn">Use Selected Flight</button>
+    `;
+    flightPage.prepend(banner);
+
+    document.getElementById("confirm-edit-flight-btn").addEventListener("click", async () => {
+        if (typeof selectedFlight === "undefined" || !selectedFlight) {
+            alert("Please select a flight first.");
+            return;
+        }
+
+        try {
+            const endpoint = editFlightId ? `/api/flights/${editFlightId}` : "/api/flights/save";
+            const method = editFlightId ? "PATCH" : "POST";
+
+            const response = await fetch(endpoint, {
+                method: method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    tripId: editTripId,
+                    route: selectedFlight.route,
+                    airline: selectedFlight.airline,
+                    price: selectedFlight.price,
+                    departureTime: selectedFlight.departureTime,
+                    arrivalTime: selectedFlight.arrivalTime,
+                    duration: selectedFlight.duration,
+                    stops: selectedFlight.stops
+                })
+            });
+
+            const data = await response.json();
+
+            if (!data.success) {
+                alert(data.message || "Could not save flight to trip.");
+                return;
+            }
+
+            window.location.href = `/html/trip.html?id=${editTripId}`;
+
+        } catch (error) {
+            console.error(error);
+            alert("Something went wrong saving the flight.");
+        }
+    });
+}
 
 // Allow for tab switching/visibility 
 tabs.forEach(tab => {
@@ -283,8 +370,7 @@ tabs.forEach(tab => {
              // Display selected restaurants
              renderSelectedRestaurants(getFoodSelection([]), foodSelection);
 
-
-             // Display selected flights
+             // Render the selected flight (selectedFlight comes from flights.js)
              flightSelection.replaceChildren();
              let flightCost = 0;
              if (typeof selectedFlight !== "undefined" && selectedFlight) {
@@ -292,6 +378,7 @@ tabs.forEach(tab => {
                  flightEl.innerHTML = `
                     <h2>${selectedFlight.route}</h2>
                     <p>${selectedFlight.meta || ""}</p>
+                    <p>${selectedFlight.departureTime || ""} → ${selectedFlight.arrivalTime || ""}</p>
                     <p>Price: $${selectedFlight.price}</p>
                  `;
                  flightSelection.appendChild(flightEl);
@@ -335,9 +422,4 @@ save.addEventListener("click", async () => {
         console.log(error);
     }
 
-
 });
-
-
-
-

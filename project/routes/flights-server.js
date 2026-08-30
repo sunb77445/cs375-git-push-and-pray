@@ -187,5 +187,157 @@ router.post(
 );
 
 
-module.exports = router;
+const sql = require("../config/db");
+const { getTripRole } = require("../config/tripAccess");
 
+// Save a flight to a trip (creator or invited member only)
+router.post("/api/flights/save", async (req, res) => {
+    if (!req.session.userId) {
+        return res.status(401).json({
+            success: false,
+            message: "You must be logged in."
+        });
+    }
+
+    const { tripId, route, airline, price, departureTime = null, arrivalTime = null, duration = null, stops = null } = req.body;
+    
+    if (!tripId || !route) {
+        return res.status(400).json({
+            success: false,
+            message: "Missing trip ID or flight information."
+        });
+    }
+
+    try {
+        const role = await getTripRole(req.session.userId, tripId);
+
+        if (!role) {
+            return res.status(403).json({
+                success: false,
+                message: "You don't have access to this trip."
+            });
+        }
+
+        const [flight] = await sql`
+            INSERT INTO flights (trip_id, route, airline, price, departure_time, arrival_time, duration, stops)
+            VALUES (${tripId}, ${route}, ${airline}, ${price}, ${departureTime}, ${arrivalTime}, ${duration}, ${stops})
+            RETURNING *
+        `;
+
+        res.json({
+            success: true,
+            message: "Flight saved to trip successfully!",
+            flight
+        });
+
+    } catch (error) {
+        console.error("Error saving flight:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to save flight to database.",
+            details: error.message
+        });
+    }
+});
+
+
+// Edit a flight already saved to a trip (creator or invited member only)
+router.patch("/api/flights/:flight_id", async (req, res) => {
+    if (!req.session.userId) {
+        return res.status(401).json({
+            success: false,
+            message: "You must be logged in."
+        });
+    }
+
+    const flightId = req.params.flight_id;
+    const { route, airline, price, departureTime = null, arrivalTime = null, duration = null, stops = null } = req.body;
+
+    try {
+        const [existing] = await sql`SELECT trip_id FROM flights WHERE id = ${flightId}`;
+
+        if (!existing) {
+            return res.status(404).json({
+                success: false,
+                message: "Flight not found."
+            });
+        }
+
+        const role = await getTripRole(req.session.userId, existing.trip_id);
+
+        if (!role) {
+            return res.status(403).json({
+                success: false,
+                message: "You don't have access to this trip."
+            });
+        }
+
+        const [updated] = await sql`
+            UPDATE flights
+            SET route = COALESCE(${route}, route),
+                airline = COALESCE(${airline}, airline),
+                price = COALESCE(${price}, price),
+                departure_time = COALESCE(${departureTime}, departure_time),
+                arrival_time = COALESCE(${arrivalTime}, arrival_time),
+                duration = COALESCE(${duration}, duration),
+                stops = COALESCE(${stops}, stops)
+            WHERE id = ${flightId}
+            RETURNING *
+        `;
+
+        res.json({ success: true, flight: updated });
+
+    } catch (error) {
+        console.error("Error updating flight:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to update flight."
+        });
+    }
+});
+
+
+// Remove a flight from a trip (creator or invited member only)
+router.delete("/api/flights/:flight_id", async (req, res) => {
+    if (!req.session.userId) {
+        return res.status(401).json({
+            success: false,
+            message: "You must be logged in."
+        });
+    }
+
+    const flightId = req.params.flight_id;
+
+    try {
+        const [existing] = await sql`SELECT trip_id FROM flights WHERE id = ${flightId}`;
+
+        if (!existing) {
+            return res.status(404).json({
+                success: false,
+                message: "Flight not found."
+            });
+        }
+
+        const role = await getTripRole(req.session.userId, existing.trip_id);
+
+        if (!role) {
+            return res.status(403).json({
+                success: false,
+                message: "You don't have access to this trip."
+            });
+        }
+
+        await sql`DELETE FROM flights WHERE id = ${flightId}`;
+
+        res.json({ success: true, message: "Flight removed." });
+
+    } catch (error) {
+        console.error("Error deleting flight:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to delete flight."
+        });
+    }
+});
+
+module.exports = router;
